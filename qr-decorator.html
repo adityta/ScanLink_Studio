@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>QR Decorator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;padding:20px}
+ .wrap{max-width:760px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
+ input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+ .preview{margin-top:12px;padding:12px;background:#fff;border-radius:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>QR Decorator (Basic)</h1>
+<input id="text" placeholder="Text/URL" value="https://example.com">
+<label style="display:block;margin-top:8px">Foreground color</label><input id="fg" type="color" value="#0f47d3">
+<label style="display:block;margin-top:8px">Background color</label><input id="bg" type="color" value="#ffffff">
+<label style="display:block;margin-top:8px">Size</label>
+<select id="size"><option>128</option><option selected>256</option><option>512</option></select>
+<button id="gen" style="margin-top:10px">Generate</button>
+
+<div class="preview" id="preview"></div>
+</div>
+
+<script>
+document.getElementById('gen').addEventListener('click', ()=>{
+  const t=document.getElementById('text').value||' ';
+  const fg=document.getElementById('fg').value;
+  const bg=document.getElementById('bg').value;
+  const size=parseInt(document.getElementById('size').value,10);
+  document.getElementById('preview').innerHTML='';
+  new QRCode(document.getElementById('preview'), {text:t,width:size,height:size,colorDark:fg,colorLight:bg});
+});
+</script>
+</body>
+</html>

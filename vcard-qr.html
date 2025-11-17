@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>vCard QR Maker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;margin:0;padding:20px}
+ .wrap{max-width:720px;margin:12px auto;background:#fff;padding:18px;border-radius:12px}
+ input,textarea,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+ #q{margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>vCard QR Maker</h1>
+  <input id="name" placeholder="Full name">
+  <input id="org" placeholder="Organization">
+  <input id="title" placeholder="Title">
+  <input id="phone" placeholder="Phone">
+  <input id="email" placeholder="Email">
+  <input id="website" placeholder="Website">
+  <button id="gen">Generate vCard QR</button>
+  <div id="q"></div>
+</div>
+
+<script>
+function escapeLF(s){ return (s||'').replace(/\n/g,''); }
+document.getElementById('gen').addEventListener('click', ()=>{
+  const n = escapeLF(document.getElementById('name').value);
+  const org = escapeLF(document.getElementById('org').value);
+  const title = escapeLF(document.getElementById('title').value);
+  const phone = escapeLF(document.getElementById('phone').value);
+  const email = escapeLF(document.getElementById('email').value);
+  const website = escapeLF(document.getElementById('website').value);
+  const lines = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    n ? `FN:${n}` : '',
+    org ? `ORG:${org}` : '',
+    title ? `TITLE:${title}` : '',
+    phone ? `TEL;TYPE=CELL:${phone}` : '',
+    email ? `EMAIL:${email}` : '',
+    website ? `URL:${website}` : '',
+    'END:VCARD'
+  ].filter(Boolean).join('\n');
+  document.getElementById('q').innerHTML='';
+  new QRCode(document.getElementById('q'), {text:lines, width:220, height:220, colorDark:'#0f47d3', colorLight:'#fff'});
+});
+</script>
+</body>
+</html>

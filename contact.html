@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contact Us</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px;margin:0}
+.box{max-width:650px;margin:auto;background:#fff;padding:30px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+h1{color:#0f47d3}
+p{color:#444;line-height:1.6;font-size:16px}
+input,button{width:100%;padding:12px;border-radius:12px;border:1px solid #e6e9ef;margin-top:10px}
+button{background:#0f47d3;color:#fff;font-weight:600;border:0;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h1>Contact Us</h1>
+
+<p>If you have any suggestions, feedback or want to report a bug,  
+feel free to contact us anytime.</p>
+
+<input id="email" value="scanlinkstudio@gmail.com" readonly>
+<button onclick="copy()">Copy Email</button>
+
+<p style="margin-top:20px;color:#666;font-size:14px">
+We usually reply within 24 hours.
+</p>
+</div>
+
+<script>
+function copy(){
+  const e=document.getElementById('email');
+  navigator.clipboard.writeText(e.value);
+  alert("Email copied!");
+}
+</script>
+
+</body>
+</html>

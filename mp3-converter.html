@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MP3 Converter (simple)</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.container{max-width:760px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>MP3 Converter (Audio → MP3)</h2>
+  <p>Simple wrapper: records or accept audio and offers download as original format. Full mp3 encode needs ffmpeg.wasm (heavy). This tool provides recording and download; for MP3 encode integrate ffmpeg.wasm if needed.</p>
+
+  <input type="file" id="file" accept="audio/*">
+  <button id="record">Record Audio</button>
+  <div id="out"></div>
+</div>
+
+<script>
+const file=document.getElementById('file'), record=document.getElementById('record'), out=document.getElementById('out');
+record.onclick=async()=>{
+  try{
+    const s = await navigator.mediaDevices.getUserMedia({audio:true});
+    const r = new MediaRecorder(s);
+    const ch=[];
+    r.ondataavailable=e=>ch.push(e.data);
+    r.onstop=()=>{ const blob=new Blob(ch,{type:'audio/webm'}); const url=URL.createObjectURL(blob); out.innerHTML=`<audio controls src="${url}"></audio><a href="${url}" download="record.webm">Download (webm)</a>`; s.getTracks().forEach(t=>t.stop()); };
+    r.start(); record.textContent='Recording... Click to stop'; record.onclick=()=>{ r.stop(); record.textContent='Record Audio'; record.onclick=()=>location.reload(); };
+  }catch(e){ alert('Permission denied'); }
+};
+
+file.onchange=()=>{
+  const f=file.files[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  out.innerHTML=`<audio controls src="${url}"></audio><a href="${url}" download="${f.name}">Download</a>`;
+};
+</script>
+</body>
+</html>

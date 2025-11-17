@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ScanLink Studio — All Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+    --glass: rgba(15,71,211,0.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111}
+  header{background:linear-gradient(90deg,#0f47d3,#7c3aed);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+  .title{font-size:18px;font-weight:700}
+  nav a{color:white;text-decoration:none;margin-left:14px;font-weight:600}
+  .hero{padding:26px 18px;text-align:center}
+  .hero h1{margin:0;color:var(--primary);font-size:28px}
+  .hero p{margin:8px 0 0;color:var(--muted)}
+  .searchWrap{max-width:720px;margin:18px auto;display:flex;gap:10px;padding:0 12px}
+  .search{flex:1;padding:12px;border-radius:12px;border:1px solid rgba(0,0,0,0.06);background:var(--card);font-size:15px}
+  .catRow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .catBtn{padding:8px 12px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--muted);cursor:pointer}
+  .catBtn.active{background:var(--primary);color:#fff;border:0;box-shadow:0 8px 20px rgba(15,71,211,0.12)}
+  .container{max-width:1200px;margin:20px auto;padding:0 16px 120px}
+  .toolsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .toolCard{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);box-shadow:0 6px 20px rgba(2,6,23,0.04);display:flex;gap:12px;align-items:center;transition:transform .18s,box-shadow .18s}
+  .toolCard:hover{transform:translateY(-6px);box-shadow:0 18px 50px rgba(2,6,23,0.08)}
+  .icon{width:56px;height:56px;border-radius:10px;background:linear-gradient(90deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;flex-shrink:0}
+  .content{flex:1}
+  .toolTitle{font-size:15px;color:var(--primary);font-weight:700}
+  .toolDesc{font-size:13px;color:var(--muted);margin-top:6px}
+  footer{background:#0f47d3;color:#fff;text-align:center;padding:18px 12px;position:fixed;left:0;right:0;bottom:0}
+  footer a{color:#fff;margin:0 8px;text-decoration:none}
+  /* FAB */
+  .fab{position:fixed;right:20px;bottom:100px;width:60px;height:60px;border-radius:999px;background:linear-gradient(90deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.2)}
+  .fabMenu{position:fixed;right:20px;bottom:180px;display:flex;flex-direction:column;gap:10px;opacity:0;pointer-events:none;transform:translateY(6px);transition:all .25s}
+  .bodyFabOpen .fabMenu{opacity:1;pointer-events:all;transform:translateY(0)}
+  .fabItem{background:var(--card);padding:10px 14px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);box-shadow:0 6px 20px rgba(2,6,23,0.04);text-decoration:none;color:#111;display:flex;gap:8px;align-items:center}
+  @media (max-width:600px){
+    .hero h1{font-size:20px}
+    .icon{width:46px;height:46px}
+    footer{position:static;margin-top:18px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.85)">All-in-one client-side tools</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>50 Tools — QR, Image, Text, Dev & Utilities</h1>
+  <p>Fast · Private · 100% client-side. Click any tool to open its page.</p>
+
+  <div class="searchWrap">
+    <input id="search" class="search" placeholder="Search tools (type e.g. qr, image, json...)" oninput="filterTools()">
+  </div>
+
+  <div class="catRow" id="catRow">
+    <button class="catBtn active" data-cat="all" onclick="setCategory('all')">All</button>
+    <button class="catBtn" data-cat="qr" onclick="setCategory('qr')">QR</button>
+    <button class="catBtn" data-cat="image" onclick="setCategory('image')">Image</button>
+    <button class="catBtn" data-cat="text" onclick="setCategory('text')">Text</button>
+    <button class="catBtn" data-cat="dev" onclick="setCategory('dev')">Dev</button>
+    <button class="catBtn" data-cat="audio" onclick="setCategory('audio')">Audio</button>
+    <button class="catBtn" data-cat="utils" onclick="setCategory('utils')">Utilities</button>
+  </div>
+</section>
+
+<main class="container">
+  <div class="toolsGrid" id="toolsGrid">
+
+    <!-- QR Tools (1-10) -->
+    <a class="toolCard" data-cat="qr" href="qr-scanner-pro.html">
+      <div class="icon">🔍</div>
+      <div class="content"><div class="toolTitle">QR Scanner Pro</div><div class="toolDesc">Camera + Upload + Copy + Share</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="qr-generator.html">
+      <div class="icon">✳️</div>
+      <div class="content"><div class="toolTitle">QR Generator</div><div class="toolDesc">Custom color, logo, size & download</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="batch-qr.html">
+      <div class="icon">📦</div>
+      <div class="content"><div class="toolTitle">Batch QR Generator</div><div class="toolDesc">Generate many QR codes at once</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="vcard-qr.html">
+      <div class="icon">👤</div>
+      <div class="content"><div class="toolTitle">vCard QR Maker</div><div class="toolDesc">Create contact QR</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="wifi-qr.html">
+      <div class="icon">📶</div>
+      <div class="content"><div class="toolTitle">WiFi QR Generator</div><div class="toolDesc">Share WiFi via QR</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="qr-error.html">
+      <div class="icon">⚠️</div>
+      <div class="content"><div class="toolTitle">QR Error Tester</div><div class="toolDesc">Compare L/M/Q/H</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="qr-decorator.html">
+      <div class="icon">🎨</div>
+      <div class="content"><div class="toolTitle">QR Decorator</div><div class="toolDesc">Design & style QR codes</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="shortlink.html">
+      <div class="icon">🔗</div>
+      <div class="content"><div class="toolTitle">Shortlink Creator</div><div class="toolDesc">Local short links</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="utm-builder.html">
+      <div class="icon">🧭</div>
+      <div class="content"><div class="toolTitle">UTM Builder</div><div class="toolDesc">Create UTM parameters</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="qr" href="image-qr-scanner.html">
+      <div class="icon">📷</div>
+      <div class="content"><div class="toolTitle">QR Scanner (Image)</div><div class="toolDesc">Upload image to scan QR</div></div>
+    </a>
+
+    <!-- Image Tools (11-20) -->
+    <a class="toolCard" data-cat="image" href="background-remover-touch.html">
+      <div class="icon">🪄</div>
+      <div class="content"><div class="toolTitle">Background Remover (Touch)</div><div class="toolDesc">Erase BG by touch/click</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="auto-bg-remover.html">
+      <div class="icon">✂️</div>
+      <div class="content"><div class="toolTitle">Auto Background Remover</div><div class="toolDesc">Auto threshold removal</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="image-compress.html">
+      <div class="icon">🗜️</div>
+      <div class="content"><div class="toolTitle">Image Compressor</div><div class="toolDesc">Compress images client-side</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="image-resize.html">
+      <div class="icon">📐</div>
+      <div class="content"><div class="toolTitle">Image Resizer</div><div class="toolDesc">Resize by px or percent</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="jpg-to-png.html">
+      <div class="icon">🖼️</div>
+      <div class="content"><div class="toolTitle">JPG → PNG</div><div class="toolDesc">Convert to PNG</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="png-to-jpg.html">
+      <div class="icon">🔁</div>
+      <div class="content"><div class="toolTitle">PNG → JPG</div><div class="toolDesc">Convert to JPEG</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="images-to-pdf.html">
+      <div class="icon">📄</div>
+      <div class="content"><div class="toolTitle">Images → PDF</div><div class="toolDesc">Combine into PDF</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="pdf-to-image.html">
+      <div class="icon">🧾</div>
+      <div class="content"><div class="toolTitle">PDF → Image</div><div class="toolDesc">PDF pages to PNG</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="watermark-tool.html">
+      <div class="icon">💧</div>
+      <div class="content"><div class="toolTitle">Watermark Adder</div><div class="toolDesc">Add text/images watermark</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="image" href="blur-background.html">
+      <div class="icon">🌫️</div>
+      <div class="content"><div class="toolTitle">Background Blur</div><div class="toolDesc">Blur background selectively</div></div>
+    </a>
+
+    <!-- Text Tools (21-30) -->
+    <a class="toolCard" data-cat="text" href="encrypt-decrypt.html">
+      <div class="icon">🔒</div>
+      <div class="content"><div class="toolTitle">Encrypt / Decrypt</div><div class="toolDesc">AES encrypt & decrypt</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="password-generator.html">
+      <div class="icon">🔑</div>
+      <div class="content"><div class="toolTitle">Password Generator</div><div class="toolDesc">Strong random passwords</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="text-compare.html">
+      <div class="icon">🔎</div>
+      <div class="content"><div class="toolTitle">Text Compare</div><div class="toolDesc">Diff & compare texts</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="notes.html">
+      <div class="icon">📝</div>
+      <div class="content"><div class="toolTitle">Notes (Local)</div><div class="toolDesc">Autosave notes in browser</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="file-merge.html">
+      <div class="icon">🔗</div>
+      <div class="content"><div class="toolTitle">File Merger</div><div class="toolDesc">Merge multiple text files</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="html-to-md.html">
+      <div class="icon">📜</div>
+      <div class="content"><div class="toolTitle">HTML → Markdown</div><div class="toolDesc">Convert HTML to Markdown</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="json-formatter.html">
+      <div class="icon">🧾</div>
+      <div class="content"><div class="toolTitle">JSON Formatter</div><div class="toolDesc">Pretty print & validate</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="beautifier.html">
+      <div class="icon">✨</div>
+      <div class="content"><div class="toolTitle">Code Beautifier</div><div class="toolDesc">Format HTML/CSS/JS</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="text-to-speech.html">
+      <div class="icon">🔊</div>
+      <div class="content"><div class="toolTitle">Text → Speech</div><div class="toolDesc">Browser TTS</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="text" href="speech-to-text.html">
+      <div class="icon">🎙️</div>
+      <div class="content"><div class="toolTitle">Speech → Text</div><div class="toolDesc">Voice transcription</div></div>
+    </a>
+
+    <!-- Dev Tools (31-40) -->
+    <a class="toolCard" data-cat="dev" href="live-html-editor.html">
+      <div class="icon">🧩</div>
+      <div class="content"><div class="toolTitle">Live HTML Editor</div><div class="toolDesc">Edit & preview HTML</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="hash-generator.html">
+      <div class="icon">🔐</div>
+      <div class="content"><div class="toolTitle">Hash Generator</div><div class="toolDesc">MD5 / SHA1 / SHA256</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="unit-converter.html">
+      <div class="icon">⚖️</div>
+      <div class="content"><div class="toolTitle">Unit Converter</div><div class="toolDesc">Length / Weight / Volume</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="calculator.html">
+      <div class="icon">🧮</div>
+      <div class="content"><div class="toolTitle">Calculator</div><div class="toolDesc">Expressions & math</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="color-picker.html">
+      <div class="icon">🎨</div>
+      <div class="content"><div class="toolTitle">Color Picker</div><div class="toolDesc">HEX / RGB / copy CSS</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="gradient-generator.html">
+      <div class="icon">🖌️</div>
+      <div class="content"><div class="toolTitle">Gradient Generator</div><div class="toolDesc">CSS gradients preview</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="logo-maker.html">
+      <div class="icon">🏷️</div>
+      <div class="content"><div class="toolTitle">Logo Maker</div><div class="toolDesc">Canvas-based text logos</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="api-simulator.html">
+      <div class="icon">🔁</div>
+      <div class="content"><div class="toolTitle">API Simulator</div><div class="toolDesc">Mock local endpoints</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="code-minify.html">
+      <div class="icon">🛠️</div>
+      <div class="content"><div class="toolTitle">Code Minify</div><div class="toolDesc">Minify HTML/CSS/JS</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="dev" href="regex-tester.html">
+      <div class="icon">🔍</div>
+      <div class="content"><div class="toolTitle">Regex Tester</div><div class="toolDesc">Test regular expressions</div></div>
+    </a>
+
+    <!-- Audio & Utilities (41-50) -->
+    <a class="toolCard" data-cat="audio" href="audio-recorder.html">
+      <div class="icon">🔊</div>
+      <div class="content"><div class="toolTitle">Audio Recorder</div><div class="toolDesc">Record & download audio</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="audio" href="mp3-converter.html">
+      <div class="icon">🎧</div>
+      <div class="content"><div class="toolTitle">MP3 Converter</div><div class="toolDesc">ffmpeg.wasm based</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="file-manager.html">
+      <div class="icon">🗄️</div>
+      <div class="content"><div class="toolTitle">File Manager</div><div class="toolDesc">IndexedDB storage</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="image-gallery.html">
+      <div class="icon">🖼️</div>
+      <div class="content"><div class="toolTitle">Image Gallery</div><div class="toolDesc">Preview & select images</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="reminders.html">
+      <div class="icon">⏰</div>
+      <div class="content"><div class="toolTitle">Reminders</div><div class="toolDesc">Browser notifications</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="qr-to-image.html">
+      <div class="icon">🧾</div>
+      <div class="content"><div class="toolTitle">QR → Image Export</div><div class="toolDesc">Save as PNG or SVG</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="screenshot-tool.html">
+      <div class="icon">📸</div>
+      <div class="content"><div class="toolTitle">Screenshot Tool</div><div class="toolDesc">Capture page snippets</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="color-contrast.html">
+      <div class="icon">⚖️</div>
+      <div class="content"><div class="toolTitle">Color Contrast Checker</div><div class="toolDesc">WCAG accessibility test</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="sitemap-generator.html">
+      <div class="icon">🗺️</div>
+      <div class="content"><div class="toolTitle">Sitemap Generator</div><div class="toolDesc">Create sitemap.xml locally</div></div>
+    </a>
+
+    <a class="toolCard" data-cat="utils" href="pixelate-tool.html">
+      <div class="icon">🔲</div>
+      <div class="content"><div class="toolTitle">Pixelate Tool</div><div class="toolDesc">Pixelate or mosaic images</div></div>
+    </a>
+
+  </div> <!-- toolsGrid -->
+</main>
+
+<!-- FAB quick menu -->
+<div class="fab" onclick="toggleFab()">+</div>
+<div class="fabMenu" id="fabMenu">
+  <a class="fabItem" href="qr-scanner-pro.html">🔍 QR Scanner</a>
+  <a class="fabItem" href="qr-generator.html">✳️ QR Generator</a>
+  <a class="fabItem" href="background-remover-touch.html">🪄 Remove BG</a>
+  <a class="fabItem" href="json-formatter.html">🧾 JSON</a>
+  <a class="fabItem" href="password-generator.html">🔑 Passwords</a>
+  <a class="fabItem" href="color-picker.html">🎨 Colors</a>
+</div>
+
+<footer>
+  © 2025 ScanLink Studio · <a href="about.html">About</a> · <a href="privacy.html">Privacy</a> · <a href="contact.html">Contact</a>
+</footer>
+
+<script>
+/* Search & filter */
+function filterTools(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  document.querySelectorAll('.toolCard').forEach(card=>{
+    const txt = card.innerText.toLowerCase();
+    card.style.display = q ? (txt.includes(q) ? 'flex' : 'none') : 'flex';
+  });
+}
+
+/* Category filter */
+function setCategory(cat){
+  document.querySelectorAll('.catBtn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.catBtn[data-cat="${cat}"]`).classList.add('active');
+  document.querySelectorAll('.toolCard').forEach(card=>{
+    if(cat==='all') card.style.display='flex';
+    else card.style.display = card.dataset.cat===cat ? 'flex' : 'none';
+  });
+}
+
+/* FAB toggle */
+function toggleFab(){
+  document.body.classList.toggle('bodyFabOpen');
+}
+
+/* Accessibility: Escape clears search */
+document.getElementById('search').addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){ e.target.value=''; filterTools(); }
+});
+</script>
+
+</body>
+</html>

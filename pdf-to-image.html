@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PDF → Images</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+img{max-width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>PDF → Images</h2>
+
+<input type="file" id="file" accept="application/pdf">
+
+<div id="out"></div>
+</div>
+
+<script>
+file.onchange=async()=>{
+  const f=file.files[0];
+  if(!f) return;
+  const pdf=await pdfjsLib.getDocument(URL.createObjectURL(f)).promise;
+  out.innerHTML='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const v=page.getViewport({scale:2});
+    const c=document.createElement("canvas");
+    const ctx=c.getContext("2d");
+    c.width=v.width; c.height=v.height;
+    await page.render({canvasContext:ctx,viewport:v}).promise;
+    const img=document.createElement("img");
+    img.src=c.toDataURL();
+    out.appendChild(img);
+  }
+};
+</script>
+
+</body>
+</html>

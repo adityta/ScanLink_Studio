@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Color Contrast Checker</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.container{max-width:760px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,button{padding:10px;border-radius:8px;border:1px solid #e6e9ef;width:100%;margin-top:8px}
+.result{margin-top:12px;padding:10px;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Color Contrast Checker</h2>
+  <input type="color" id="a" value="#000000">
+  <input type="color" id="b" value="#ffffff">
+  <button id="go">Check Contrast</button>
+  <div id="out" class="result"></div>
+</div>
+
+<script>
+function luminance(hex){
+  const c = hex.replace('#',''); const r=parseInt(c.slice(0,2),16)/255; const g=parseInt(c.slice(2,4),16)/255; const b=parseInt(c.slice(4,6),16)/255;
+  [r,g,b] = [r,g,b].map(v => v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4));
+  return 0.2126*r + 0.7152*g + 0.0722*b;
+}
+go.onclick=()=>{
+  const A=a.value, B=b.value;
+  const L1 = luminance(A), L2 = luminance(B);
+  const contrast = (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05);
+  let pass = 'Fail';
+  if(contrast>=7) pass='AAA';
+  else if(contrast>=4.5) pass='AA';
+  else pass='Fail';
+  out.innerHTML = `Contrast ratio: ${contrast.toFixed(2)} — ${pass}`;
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reminders</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.container{max-width:720px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,button{padding:10px;border-radius:8px;border:1px solid #e6e9ef;width:100%;margin-top:8px}
+.list{margin-top:12px}
+.item{padding:8px;background:#fafafa;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Reminders (Browser Notifications)</h2>
+  <input type="datetime-local" id="time">
+  <input id="note" placeholder="Reminder text">
+  <button id="set">Set Reminder</button>
+  <div class="list" id="list"></div>
+</div>
+
+<script>
+const list=document.getElementById('list');
+function load(){
+  list.innerHTML='';
+  const arr=JSON.parse(localStorage.getItem('rmd')||'[]');
+  arr.forEach((r,idx)=>{
+    const d=document.createElement('div'); d.className='item';
+    d.innerHTML=`<div>${new Date(r.time).toLocaleString()}<div style="font-size:13px;color:#666">${r.text}</div></div><div><button data-i="${idx}">Delete</button></div>`;
+    list.appendChild(d);
+    d.querySelector('button').onclick=()=>{ arr.splice(idx,1); localStorage.setItem('rmd',JSON.stringify(arr)); load(); };
+  });
+}
+document.getElementById('set').onclick=()=>{
+  const t=time.value, txt=note.value.trim();
+  if(!t||!txt) return alert('Enter time and text');
+  const arr=JSON.parse(localStorage.getItem('rmd')||'[]');
+  arr.push({time:new Date(t).toISOString(), text:txt});
+  localStorage.setItem('rmd',JSON.stringify(arr));
+  note.value=''; time.value='';
+  load(); scheduleChecks();
+};
+
+function scheduleChecks(){
+  clearInterval(window._rint);
+  window._rint = setInterval(()=>{
+    const now=Date.now();
+    const arr=JSON.parse(localStorage.getItem('rmd')||'[]');
+    let changed=false;
+    for(let i=arr.length-1;i>=0;i--){
+      if(new Date(arr[i].time).getTime() <= now){
+        notify(arr[i].text);
+        arr.splice(i,1); changed=true;
+      }
+    }
+    if(changed) localStorage.setItem('rmd',JSON.stringify(arr)), load();
+  },2000);
+}
+function notify(text){
+  if(Notification && Notification.permission==='granted') new Notification('Reminder', {body:text});
+  else if(Notification && Notification.permission!=='denied') Notification.requestPermission().then(p=>{ if(p==='granted') new Notification('Reminder',{body:text});});
+  alert('Reminder: '+text);
+}
+load(); scheduleChecks();
+</script>
+</body>
+</html>

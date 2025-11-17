@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Color Picker</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.box{max-width:640px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+.row{display:flex;gap:8px;align-items:center}
+input,button{padding:8px;border-radius:8px;border:1px solid #e6e9ef}
+.preview{height:120px;border-radius:8px;margin-top:8px;border:1px solid #e6e9ef}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Color Picker</h2>
+<div class="row">
+  <input type="color" id="c1" value="#0f47d3">
+  <input type="text" id="hex" value="#0f47d3">
+  <button id="copy">Copy HEX</button>
+</div>
+<div class="preview" id="preview"></div>
+<div style="margin-top:8px">
+  <input id="cssout" readonly>
+</div>
+</div>
+
+<script>
+function update(){ preview.style.background=c1.value; hex.value=c1.value; cssout.value = `background: ${c1.value};`; }
+c1.oninput=update; hex.onchange=()=>{ c1.value = hex.value; update(); };
+copy.onclick=()=>{ navigator.clipboard.writeText(hex.value); copy.innerText='Copied'; setTimeout(()=>copy.innerText='Copy HEX',900); };
+update();
+</script>
+</body>
+</html>

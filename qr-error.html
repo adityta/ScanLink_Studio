@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>QR Error Correction Tester</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;padding:20px}
+ .wrap{max-width:720px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
+ input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+ .row{display:flex;gap:8px;margin-top:8px}
+ .row button{flex:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>QR Error Correction Tester</h1>
+<input id="text" placeholder="Text to encode" value="https://example.com">
+<div class="row">
+  <button data-e="L" class="ec">L (Low)</button>
+  <button data-e="M" class="ec">M (Medium)</button>
+  <button data-e="Q" class="ec">Q (Quartile)</button>
+  <button data-e="H" class="ec">H (High)</button>
+</div>
+<div id="out" style="margin-top:12px"></div>
+</div>
+
+<script>
+document.querySelectorAll('.ec').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const text = document.getElementById('text').value || '';
+    const level = b.getAttribute('data-e');
+    document.getElementById('out').innerHTML='';
+    const opts = {text, width:220, height:220, colorDark:'#0f47d3', colorLight:'#fff', correctLevel: QRCode.CorrectLevel[level]};
+    new QRCode(document.getElementById('out'), opts);
+  });
+});
+</script>
+</body>
+</html>

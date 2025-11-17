@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encrypt / Decrypt</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px}
+.box{max-width:800px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea,input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:1px solid #dcdfe6}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Encrypt / Decrypt</h2>
+
+<textarea id="text" placeholder="Enter text"></textarea>
+<input id="key" placeholder="Secret key">
+<button id="enc">Encrypt</button>
+<button id="dec">Decrypt</button>
+
+<textarea id="out" placeholder="Output" readonly></textarea>
+</div>
+
+<script>
+enc.onclick=()=>{
+  let t=text.value.trim(), k=key.value.trim();
+  if(!t||!k) return alert("Enter text + key");
+  out.value = CryptoJS.AES.encrypt(t,k).toString();
+};
+
+dec.onclick=()=>{
+  let t=text.value.trim(), k=key.value.trim();
+  if(!t||!k) return alert("Enter cipher + key");
+  try{
+    out.value = CryptoJS.AES.decrypt(t,k).toString(CryptoJS.enc.Utf8);
+  }catch(e){
+    out.value="Invalid key or corrupted text!";
+  }
+};
+</script>
+
+</body>
+</html>

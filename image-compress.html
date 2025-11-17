@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Compress</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button,select{padding:10px;border-radius:10px;width:100%;margin-top:10px}
+img{max-width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Image Compressor</h2>
+
+<input type="file" id="file">
+<select id="quality">
+  <option value="1">100% Quality</option>
+  <option value="0.8">80%</option>
+  <option value="0.6">60%</option>
+  <option value="0.4">40%</option>
+  <option value="0.2">20%</option>
+</select>
+
+<button id="go">Compress</button>
+
+<img id="preview">
+</div>
+
+<script>
+file.onchange=e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  preview.src=URL.createObjectURL(f);
+};
+
+go.onclick=()=>{
+  if(!file.files[0]) return alert("Select image!");
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    const ctx=c.getContext("2d");
+    c.width=img.width;
+    c.height=img.height;
+    ctx.drawImage(img,0,0);
+    preview.src=c.toDataURL("image/jpeg",parseFloat(quality.value));
+  };
+  img.src=URL.createObjectURL(file.files[0]);
+};
+</script>
+
+</body>
+</html>

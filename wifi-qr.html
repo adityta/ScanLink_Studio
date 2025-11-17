@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>WiFi QR Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;padding:20px}
+ .wrap{max-width:640px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
+ input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+</style></head>
+<body>
+<div class="wrap">
+<h1>WiFi QR Generator</h1>
+<input id="ssid" placeholder="SSID (network name)">
+<select id="enc"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">None</option></select>
+<input id="pwd" placeholder="Password (leave blank if none)">
+<label style="font-size:13px;margin-top:8px;display:block"><input type="checkbox" id="hidden"> Hidden network</label>
+<button id="gen">Generate</button>
+<div id="out" style="margin-top:12px"></div>
+</div>
+
+<script>
+document.getElementById('gen').addEventListener('click', ()=>{
+  const ssid = document.getElementById('ssid').value;
+  const enc = document.getElementById('enc').value;
+  const pwd = document.getElementById('pwd').value;
+  const hidden = document.getElementById('hidden').checked ? 'true' : 'false';
+  if(!ssid) return alert('Enter SSID');
+  // WiFi QR format: WIFI:T:WPA;S:SSID;P:password;H:true;;
+  const data = `WIFI:T:${enc};S:${ssid};P:${pwd};H:${hidden};;`;
+  document.getElementById('out').innerHTML='';
+  new QRCode(document.getElementById('out'), {text:data, width:220, height:220, colorDark:'#0f47d3', colorLight:'#fff'});
+});
+</script>
+</body>
+</html>

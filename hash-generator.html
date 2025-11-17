@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hash Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.box{max-width:720px;margin:auto;background:#fff;padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+input,select,button,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e6e9ef}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2>Hash Generator</h2>
+  <input id="text" placeholder="Text to hash">
+  <select id="alg">
+    <option value="MD5">MD5</option>
+    <option value="SHA1">SHA1</option>
+    <option value="SHA256" selected>SHA256</option>
+    <option value="SHA512">SHA512</option>
+  </select>
+  <button id="go">Generate</button>
+  <textarea id="out" readonly placeholder="Hash result..."></textarea>
+</div>
+
+<script>
+go.onclick=()=>{
+  const t=text.value||'';
+  if(!t) return alert('Enter text');
+  let res='';
+  if(alg.value==='MD5') res=CryptoJS.MD5(t).toString();
+  if(alg.value==='SHA1') res=CryptoJS.SHA1(t).toString();
+  if(alg.value==='SHA256') res=CryptoJS.SHA256(t).toString();
+  if(alg.value==='SHA512') res=CryptoJS.SHA512(t).toString();
+  out.value=res;
+  navigator.clipboard.writeText(res).catch(()=>{});
+};
+</script>
+</body>
+</html>

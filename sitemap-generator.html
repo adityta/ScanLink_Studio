@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sitemap Generator</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.container{max-width:760px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,textarea,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Sitemap Generator</h2>
+  <textarea id="urls" placeholder="One URL per line"></textarea>
+  <button id="gen">Generate sitemap.xml</button>
+  <pre id="out" style="margin-top:12px;background:#f7f9ff;padding:12px;border-radius:8px"></pre>
+</div>
+
+<script>
+gen.onclick=()=>{
+  const lines = urls.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!lines.length) return alert('Enter URLs');
+  const base = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+  const items = lines.map(u=>`  <url>\n    <loc>${u}</loc>\n  </url>`).join('\n');
+  const xml = base + items + '\n</urlset>';
+  out.textContent = xml;
+};
+</script>
+</body>
+</html>

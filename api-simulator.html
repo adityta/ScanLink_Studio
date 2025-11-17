@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>API Simulator</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.box{max-width:900px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,textarea,button,select{width:100%;padding:8px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+.list{margin-top:12px}
+.item{padding:10px;border-radius:8px;background:#fafafa;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>API Simulator (Client-side)</h2>
+<input id="path" placeholder="/hello">
+<textarea id="response" placeholder='{"message":"hi"}'></textarea>
+<button id="save">Save Endpoint</button>
+
+<div class="list" id="list"></div>
+
+<hr>
+<h3>Simulate</h3>
+<input id="simPath" placeholder="/hello">
+<button id="sim">Run</button>
+<pre id="out" style="background:#f7f9ff;padding:10px;border-radius:8px"></pre>
+</div>
+
+<script>
+const listEl=document.getElementById('list');
+function load(){
+  listEl.innerHTML='';
+  const store=JSON.parse(localStorage.getItem('apis')||'[]');
+  store.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='item';
+    d.innerHTML=`<div><b>${s.path}</b><div style="font-size:12px;color:#666">${JSON.stringify(s.response)}</div></div><div><button data-i="${i}">Delete</button></div>`;
+    listEl.appendChild(d);
+    d.querySelector('button').onclick=()=>{ store.splice(i,1); localStorage.setItem('apis',JSON.stringify(store)); load(); };
+  });
+}
+save.onclick=()=>{
+  const p=path.value.trim(); let r;
+  try{ r = JSON.parse(response.value); }catch(e){ return alert('Response must be valid JSON'); }
+  if(!p) return alert('Enter path');
+  const store=JSON.parse(localStorage.getItem('apis')||'[]');
+  store.unshift({path:p,response:r});
+  localStorage.setItem('apis',JSON.stringify(store)); path.value=''; response.value=''; load();
+};
+sim.onclick=()=>{
+  const p=simPath.value.trim();
+  const store=JSON.parse(localStorage.getItem('apis')||'[]');
+  const found = store.find(s=>s.path===p);
+  out.textContent = found ? JSON.stringify(found.response,null,2) : 'Endpoint not found';
+};
+load();
+</script>
+</body>
+</html>

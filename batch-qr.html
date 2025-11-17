@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Batch QR Generator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ body{font-family:Poppins,system-ui;background:#f4f7fb;margin:0;padding:20px}
+ .wrap{max-width:900px;margin:12px auto;background:#fff;padding:18px;border-radius:12px}
+ textarea{width:100%;height:140px;padding:10px;border-radius:10px;border:1px solid #e6e9ef}
+ .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+ .card{padding:8px;border-radius:8px;background:#fafafa;border:1px solid #ececec;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Batch QR Generator</h1>
+  <p>Enter one text/URL per line, then click Generate. You can download all as PNG (opens each in new tab).</p>
+  <textarea id="input" placeholder="https://example.com/page1
+https://example.com/page2
+Some text"></textarea>
+  <div style="margin-top:8px">
+    <button id="gen">Generate</button>
+    <button id="downloadAll">Open All (download manually)</button>
+  </div>
+
+  <div class="grid" id="out"></div>
+</div>
+
+<script>
+const gen = document.getElementById('gen');
+const out = document.getElementById('out');
+gen.onclick = ()=>{
+  out.innerHTML='';
+  const lines = document.getElementById('input').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!lines.length) return alert('Enter at least one line.');
+  lines.forEach((t,idx)=>{
+    const c = document.createElement('div'); c.className='card';
+    const holder = document.createElement('div');
+    new QRCode(holder, {text:t, width:120, height:120, colorDark:'#0f47d3', colorLight:'#fff'});
+    const label = document.createElement('div'); label.style.marginTop='6px'; label.style.fontSize='12px'; label.textContent=t;
+    c.appendChild(holder); c.appendChild(label);
+    out.appendChild(c);
+  });
+};
+
+document.getElementById('downloadAll').onclick = ()=>{
+  // open each image in new tab (user can save)
+  const imgs = out.querySelectorAll('img, canvas');
+  if(!imgs.length) return alert('Generate first.');
+  imgs.forEach(i=>{
+    if(i.tagName.toLowerCase()==='img') window.open(i.src,'_blank');
+    else {
+      i.toBlob(blob => { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.target='_blank'; a.click(); });
+    }
+  });
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Calculator</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.box{max-width:520px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+#display{height:56px;font-size:18px}
+.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.nums button{padding:14px;border-radius:8px;background:#0f47d3;color:#fff;border:0;font-size:16px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Calculator</h2>
+<input id="display" readonly>
+<div class="nums">
+  <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button><button onclick="press('/')">÷</button>
+  <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button><button onclick="press('*')">×</button>
+  <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button><button onclick="press('-')">−</button>
+  <button onclick="press('0')">0</button><button onclick="press('.')">.</button><button onclick="calc()">=</button><button onclick="press('+')">+</button>
+</div>
+<button onclick="clearAll()" style="margin-top:10px;background:#6b7280;color:#fff">Clear</button>
+</div>
+
+<script>
+let expr='';
+function press(ch){ expr += ch; display.value = expr; }
+function calc(){
+  try{
+    // safe-ish eval: allow only digits, operators, parentheses, dot
+    if(!/^[0-9+\-*/().\s]+$/.test(expr)) throw 'Invalid';
+    const r = Function('"use strict";return ('+expr+')')();
+    display.value = r;
+    expr = String(r);
+  }catch(e){
+    display.value='Error'; expr='';
+  }
+}
+function clearAll(){ expr=''; display.value=''; }
+</script>
+</body>
+</html>

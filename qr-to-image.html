@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QR → Image Export</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.container{max-width:720px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+#out{margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>QR → Image Export</h2>
+  <input id="text" placeholder="Text or URL">
+  <select id="size"><option>128</option><option selected>256</option><option>512</option></select>
+  <button id="gen">Generate & Download</button>
+  <div id="out"></div>
+</div>
+
+<script>
+gen.onclick=()=>{
+  out.innerHTML='';
+  const t=text.value||' ';
+  const s=parseInt(size.value,10);
+  new QRCode(out, {text:t,width:s,height:s,colorDark:'#0f47d3',colorLight:'#fff'});
+  const img = out.querySelector('img') || out.querySelector('canvas');
+  setTimeout(()=>{ if(img.tagName.toLowerCase()==='img'){ const a=document.createElement('a'); a.href=img.src; a.download='qr.png'; a.click(); } else { img.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='qr.png'; a.click(); }); } },200);
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>UTM Builder</title>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;padding:20px}
+ .wrap{max-width:720px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
+ input,button,select{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>UTM Builder</h1>
+<input id="base" placeholder="Base URL (https://example.com/page)">
+<input id="src" placeholder="utm_source (e.g. newsletter)">
+<input id="med" placeholder="utm_medium (e.g. email)">
+<input id="cmp" placeholder="utm_campaign">
+<input id="term" placeholder="utm_term (optional)">
+<input id="cont" placeholder="utm_content (optional)">
+<button id="gen">Generate UTM URL</button>
+<div id="out" style="margin-top:12px;padding:12px;background:#eaf0ff;border-radius:8px;display:none"></div>
+</div>
+
+<script>
+document.getElementById('gen').addEventListener('click', ()=>{
+  const base = (document.getElementById('base').value||'').trim();
+  if(!base) return alert('Enter base URL');
+  const params = new URLSearchParams();
+  [['src','utm_source'],['med','utm_medium'],['cmp','utm_campaign'],['term','utm_term'],['cont','utm_content']].forEach(([id, key])=>{
+    const v = document.getElementById(id==='src'? 'src' : id==='med'? 'med' : id==='cmp'? 'cmp' : id==='term'? 'term' : 'cont').value.trim();
+    if(v) params.set(key, v);
+  });
+  const url = base + (base.includes('?')? '&' : '?') + params.toString();
+  const out = document.getElementById('out'); out.style.display='block'; out.textContent = url;
+});
+</script>
+</body>
+</html>

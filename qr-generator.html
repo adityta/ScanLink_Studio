@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>QR Generator</title>
+<!-- QRCode.js (lightweight) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body{font-family:Poppins,system-ui;background:#f4f7fb;margin:0;padding:20px}
+  .wrap{max-width:720px;margin:12px auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+  h1{color:#0f47d3}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  input,select,button{padding:10px;border-radius:10px;border:1px solid #e6e9ef}
+  #qrcode{margin-top:14px;padding:12px;background:#fff;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>QR Generator</h1>
+  <div>
+    <input id="text" placeholder="Text or URL" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef">
+  </div>
+  <div class="row">
+    <select id="size"><option>128</option><option selected>256</option><option>512</option></select>
+    <input id="color" type="color" value="#0f47d3">
+    <button id="gen">Generate</button>
+    <button id="download">Download PNG</button>
+  </div>
+
+  <div id="qrcode"></div>
+</div>
+
+<script>
+let qrcodeEl = document.getElementById('qrcode');
+let qrcode;
+function generate(){
+  const text = document.getElementById('text').value.trim();
+  const size = parseInt(document.getElementById('size').value,10) || 256;
+  const color = document.getElementById('color').value || '#0f47d3';
+  qrcodeEl.innerHTML='';
+  qrcode = new QRCode(qrcodeEl, { text:text||' ', width:size, height:size, colorDark:color, colorLight:'#ffffff' });
+}
+document.getElementById('gen').addEventListener('click', generate);
+
+document.getElementById('download').addEventListener('click', ()=>{
+  if(!qrcode) { alert('Generate first'); return; }
+  // qrcode uses an img or canvas inside qrcodeEl
+  const img = qrcodeEl.querySelector('img') || qrcodeEl.querySelector('canvas');
+  if(!img) { alert('No QR found'); return; }
+  if(img.tagName.toLowerCase()==='img'){
+    const a=document.createElement('a');
+    a.href=img.src; a.download='qr.png'; a.click();
+  } else {
+    img.toBlob(blob=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob); a.download='qr.png'; a.click();
+    });
+  }
+});
+</script>
+</body>
+</html>

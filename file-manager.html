@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local File Manager</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.container{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+.list{margin-top:12px}
+.item{padding:8px;border-radius:8px;background:#fafafa;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Local File Manager (IndexedDB)</h2>
+  <input type="file" id="file" multiple>
+  <button id="save">Save to Local</button>
+  <div class="list" id="list"></div>
+</div>
+
+<script>
+const dbName='scanlink-files', list=document.getElementById('list');
+let db;
+const req = indexedDB.open(dbName,1);
+req.onupgradeneeded = e => { db = e.target.result; if(!db.objectStoreNames.contains('files')) db.createObjectStore('files',{keyPath:'id',autoIncrement:true}); };
+req.onsuccess = e => { db = e.target.result; load(); };
+
+document.getElementById('save').onclick=()=>{
+  const fs=[...file.files];
+  if(!fs.length) return alert('Select files');
+  const tx = db.transaction('files','readwrite'); const store = tx.objectStore('files');
+  fs.forEach(async f=>{
+    const data = await f.arrayBuffer();
+    store.add({name:f.name, type:f.type, blob:data, date:Date.now()});
+  });
+  tx.oncomplete = ()=>{ load(); alert('Saved'); };
+};
+
+function load(){
+  list.innerHTML='';
+  const tx = db.transaction('files','readonly'); const store = tx.objectStore('files');
+  store.openCursor().onsuccess = e => {
+    const c = e.target.result;
+    if(c){
+      const d=c.value;
+      const div=document.createElement('div'); div.className='item';
+      div.innerHTML = `<div><b>${d.name}</b><div style="font-size:12px;color:#666">${new Date(d.date).toLocaleString()}</div></div><div><button data-id="${d.id}">Download</button></div>`;
+      list.appendChild(div);
+      div.querySelector('button').onclick = async ev=>{
+        const id = Number(ev.target.dataset.id);
+        const tx2 = db.transaction('files','readonly'); const s2 = tx2.objectStore('files');
+        s2.get(id).onsuccess = e2 => {
+          const rec = e2.target.result;
+          const blob = new Blob([rec.blob], {type: rec.type});
+          const url = URL.createObjectURL(blob);
+          const a=document.createElement('a'); a.href=url; a.download=rec.name; a.click();
+        };
+      };
+      c.continue();
+    }
+  };
+}
+</script>
+</body>
+</html>

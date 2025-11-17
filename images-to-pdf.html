@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Images → PDF</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:800px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Images → PDF</h2>
+<input type="file" id="files" multiple accept="image/*">
+<button id="go">Create PDF</button>
+</div>
+
+<script>
+go.onclick=async()=>{
+  const fs=[...files.files];
+  if(!fs.length) return alert("Select images");
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+
+  for(let i=0;i<fs.length;i++){
+    let img=await toImg(fs[i]);
+    let w=img.width, h=img.height;
+    let r=w/h;
+    let pw=190, ph=pw/r;
+    if(i>0) pdf.addPage();
+    pdf.addImage(img,"PNG",10,10,pw,ph);
+  }
+  pdf.save("images.pdf");
+};
+
+function toImg(f){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>res(img);
+    img.src=URL.createObjectURL(f);
+  });
+}
+</script>
+</body>
+</html>

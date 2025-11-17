@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Speech → Text</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px}
+.box{max-width:800px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Speech → Text</h2>
+
+<button id="start">Start</button>
+<button id="stop">Stop</button>
+
+<textarea id="out"></textarea>
+</div>
+
+<script>
+let rec;
+
+if("webkitSpeechRecognition" in window){
+  rec=new webkitSpeechRecognition();
+  rec.continuous=true;
+  rec.interimResults=true;
+
+  rec.onresult=e=>{
+    let t="";
+    for(let i=0;i<e.results.length;i++){
+      t+=e.results[i][0].transcript;
+    }
+    out.value=t;
+  };
+}else{
+  alert("Speech recognition not supported in this browser.");
+}
+
+start.onclick=()=>rec.start();
+stop.onclick=()=>rec.stop();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Text → Speech</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:800px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea,button,select{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Text → Speech</h2>
+
+<textarea id="text" placeholder="Type text..."></textarea>
+<select id="rate">
+  <option value="1">Normal</option>
+  <option value="0.8">Slow</option>
+  <option value="1.5">Fast</option>
+</select>
+<button id="go">Speak</button>
+</div>
+
+<script>
+go.onclick=()=>{
+  const msg=new SpeechSynthesisUtterance(text.value);
+  msg.rate=parseFloat(rate.value);
+  speechSynthesis.speak(msg);
+};
+</script>
+
+</body>
+</html>

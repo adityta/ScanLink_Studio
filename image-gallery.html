@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Image Gallery</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.container{max-width:1100px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,button{padding:10px;border-radius:8px;border:1px solid #e6e9ef;width:100%;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:12px}
+.card img{width:100%;height:120px;object-fit:cover;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Image Gallery</h2>
+  <input type="file" id="files" accept="image/*" multiple>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+files.onchange = ()=>{
+  grid.innerHTML='';
+  [...files.files].forEach(f=>{
+    const url = URL.createObjectURL(f);
+    const d=document.createElement('div'); d.className='card';
+    d.innerHTML = `<img src="${url}"><div style="font-size:12px;overflow:hidden;text-overflow:ellipsis">${f.name}</div>`;
+    grid.appendChild(d);
+    d.onclick = ()=> window.open(url,'_blank');
+  });
+};
+</script>
+</body>
+</html>

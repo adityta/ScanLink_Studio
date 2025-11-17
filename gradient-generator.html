@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gradient Generator</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.box{max-width:760px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+.row{display:flex;gap:8px}
+input,select,button{padding:8px;border-radius:8px;border:1px solid #e6e9ef}
+.preview{height:160px;border-radius:10px;margin-top:12px;border:1px solid #e6e9ef}
+textarea{width:100%;height:56px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Gradient Generator</h2>
+<div class="row">
+  <input type="color" id="a" value="#00d2ff">
+  <input type="color" id="b" value="#9b5cff">
+  <select id="type"><option value="linear">Linear</option><option value="radial">Radial</option></select>
+  <button id="gen">Generate</button>
+</div>
+<div class="preview" id="p"></div>
+<textarea id="css" readonly></textarea>
+</div>
+
+<script>
+gen.onclick=()=>{
+  const t=type.value, g = t==='linear' ? `linear-gradient(90deg, ${a.value}, ${b.value})` : `radial-gradient(circle, ${a.value}, ${b.value})`;
+  p.style.background = g;
+  css.value = `background: ${g};`;
+};
+gen.click();
+</script>
+</body>
+</html>

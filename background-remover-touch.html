@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Background Remover (Touch)</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px #0001}
+canvas{max-width:100%;border-radius:10px}
+input,button{padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:10px;width:100%}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Background Remover (Touch Eraser)</h2>
+
+<input type="file" id="file" accept="image/*">
+
+<canvas id="c"></canvas>
+
+<button id="save">Download PNG</button>
+</div>
+
+<script>
+const file=document.getElementById("file");
+const c=document.getElementById("c");
+const ctx=c.getContext("2d");
+let img=null, drawing=false;
+
+file.onchange=e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+
+  img=new Image();
+  img.onload=()=>{
+    c.width=img.width;
+    c.height=img.height;
+    ctx.drawImage(img,0,0);
+  };
+  img.src=URL.createObjectURL(f);
+};
+
+c.addEventListener("touchstart",()=>drawing=true);
+c.addEventListener("touchend",()=>drawing=false);
+c.addEventListener("touchmove",e=>{
+  if(!drawing) return;
+  const r=c.getBoundingClientRect();
+  const x=e.touches[0].clientX-r.left;
+  const y=e.touches[0].clientY-r.top;
+  ctx.globalCompositeOperation="destination-out";
+  ctx.beginPath();
+  ctx.arc(x,y,20,0,Math.PI*2);
+  ctx.fill();
+});
+
+document.getElementById("save").onclick=()=>{
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/png");
+  a.download="removed.png";
+  a.click();
+};
+</script>
+
+</body>
+</html>

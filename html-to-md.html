@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML to Markdown</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea{width:100%;height:200px;border-radius:10px;padding:10px}
+button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>HTML → Markdown</h2>
+
+<textarea id="html" placeholder="<h1>Hello</h1>"></textarea>
+<button id="go">Convert</button>
+<textarea id="md" placeholder="Markdown..." readonly></textarea>
+</div>
+
+<script>
+go.onclick=()=>{
+  let h=html.value;
+  h=h.replace(/<h1>(.*?)<\/h1>/g,"# $1");
+  h=h.replace(/<h2>(.*?)<\/h2>/g,"## $1");
+  h=h.replace(/<h3>(.*?)<\/h3>/g,"### $1");
+  h=h.replace(/<p>(.*?)<\/p>/g,"$1\n");
+  h=h.replace(/<strong>(.*?)<\/strong>/g,"**$1**");
+  h=h.replace(/<em>(.*?)<\/em>/g,"*$1*");
+  h=h.replace(/<br\s*\/?>/g,"\n");
+  md.value=h;
+};
+</script>
+
+</body>
+</html>

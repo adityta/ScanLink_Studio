@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Regex Tester</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.box{max-width:900px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,textarea,button,select{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid #e6e9ef}
+pre{background:#f7f9ff;padding:10px;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Regex Tester</h2>
+<input id="pattern" placeholder="Pattern (without / /). Example: ^https?://">
+<select id="flags"><option value="">(none)</option><option value="g">g</option><option value="i">i</option><option value="gi">gi</option></select>
+<textarea id="sample" placeholder="Sample text..."></textarea>
+<button id="go">Test</button>
+<pre id="out"></pre>
+</div>
+
+<script>
+go.onclick=()=>{
+  let p = pattern.value;
+  if(!p) return alert('Enter pattern');
+  try{
+    const re = new RegExp(p, flags.value);
+    const s = sample.value;
+    const matches = [];
+    let m;
+    if(re.global){
+      while((m = re.exec(s)) !== null){ matches.push({match:m[0], index:m.index, groups: m.slice(1)}); if(m.index === re.lastIndex) re.lastIndex++; }
+    } else {
+      m = re.exec(s);
+      if(m) matches.push({match:m[0], index:m.index, groups:m.slice(1)});
+    }
+    out.textContent = JSON.stringify(matches, null, 2) || 'No matches';
+  }catch(e){
+    out.textContent = 'Regex error: ' + e.message;
+  }
+};
+</script>
+</body>
+</html>

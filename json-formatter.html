@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>JSON Formatter</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>JSON Formatter</h2>
+
+<textarea id="js" placeholder='{"name":"Abhi"}'></textarea>
+<button id="go">Format</button>
+<textarea id="out" readonly></textarea>
+</div>
+
+<script>
+go.onclick=()=>{
+  try{
+    out.value=JSON.stringify(JSON.parse(js.value),null,2);
+  }catch(e){
+    out.value="Invalid JSON!";
+  }
+};
+</script>
+
+</body>
+</html>

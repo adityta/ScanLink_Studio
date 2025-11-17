@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Watermark Tool</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+canvas{max-width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Watermark Tool</h2>
+
+<input type="file" id="file">
+<input id="text" placeholder="Watermark text">
+<button id="go">Apply Watermark</button>
+<canvas id="c"></canvas>
+</div>
+
+<script>
+const c=c=document.getElementById("c"),ctx=c.getContext("2d");
+
+go.onclick=()=>{
+  const f=file.files[0];
+  const t=text.value.trim();
+  if(!f || !t) return alert("Select image + enter text");
+  const img=new Image();
+  img.onload=()=>{
+    c.width=img.width; c.height=img.height;
+    ctx.drawImage(img,0,0);
+    ctx.font="40px sans-serif";
+    ctx.fillStyle="rgba(0,0,0,0.4)";
+    ctx.textAlign="center";
+    ctx.fillText(t,img.width/2,img.height-50);
+  };
+  img.src=URL.createObjectURL(f);
+};
+</script>
+
+</body>
+</html>

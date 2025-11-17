@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>File Merge</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
+textarea{width:100%;height:200px;margin-top:10px;padding:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>File Merge</h2>
+
+<input type="file" id="files" multiple accept=".txt">
+<button id="go">Merge</button>
+
+<textarea id="out"></textarea>
+</div>
+
+<script>
+go.onclick=async()=>{
+  const fs=[...files.files];
+  if(!fs.length) return alert("Select files");
+
+  let merged="";
+  for(const f of fs){
+    merged+=await f.text()+"\n";
+  }
+  out.value=merged;
+};
+</script>
+
+</body>
+</html>

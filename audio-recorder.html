@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audio Recorder</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:18px}
+.container{max-width:720px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+button{padding:12px;border-radius:10px;border:0;background:#0f47d3;color:#fff;cursor:pointer;margin-top:10px;width:100%}
+audio{width:100%;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Audio Recorder</h2>
+  <button id="start">Start Recording</button>
+  <button id="stop" style="display:none;background:#c62828">Stop</button>
+  <div id="clips"></div>
+</div>
+
+<script>
+let rec, stream, chunks=[];
+const start=document.getElementById('start'), stop=document.getElementById('stop'), clips=document.getElementById('clips');
+
+start.onclick=async()=>{
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    rec = new MediaRecorder(stream);
+    rec.ondataavailable = e=>chunks.push(e.data);
+    rec.onstop = ()=>{
+      const blob = new Blob(chunks,{type:'audio/webm'});
+      chunks=[];
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('audio'); a.controls=true; a.src=url;
+      const dl = document.createElement('a'); dl.href=url; dl.download='recording.webm'; dl.textContent='Download';
+      const box = document.createElement('div'); box.style.marginTop='12px';
+      box.appendChild(a); box.appendChild(document.createElement('br')); box.appendChild(dl);
+      clips.prepend(box);
+    };
+    rec.start();
+    start.style.display='none'; stop.style.display='block';
+  }catch(e){ alert('Microphone permission denied'); }
+};
+
+stop.onclick=()=>{
+  if(rec && rec.state==='recording') rec.stop();
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  start.style.display='block'; stop.style.display='none';
+};
+</script>
+</body>
+</html>

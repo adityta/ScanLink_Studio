@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Code Minify</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.box{max-width:900px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+textarea,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Code Minify (basic)</h2>
+<select id="type"><option value="js">JavaScript</option><option value="css">CSS</option><option value="html">HTML</option></select>
+<textarea id="in" placeholder="Paste code..."></textarea>
+<button id="go">Minify</button>
+<textarea id="out" readonly placeholder="Minified output"></textarea>
+</div>
+
+<script>
+go.onclick=()=>{
+  let s = in.value || '';
+  if(type.value==='js' || type.value==='css'){
+    s = s.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm,'').replace(/\n+/g,' ').replace(/\s+/g,' ');
+  } else {
+    // simple html minify
+    s = s.replace(/>\s+</g,'><').replace(/\s+/g,' ');
+  }
+  out.value = s.trim();
+};
+</script>
+</body>
+</html>

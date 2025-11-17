@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Shortlink Creator (Local)</title>
+<style>
+ body{font-family:Poppins;background:#f4f7fb;padding:20px}
+ .wrap{max-width:720px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
+ input,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
+ .list{margin-top:12px}
+ .item{padding:8px;border-radius:8px;background:#fafafa;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Shortlink Creator (Local)</h1>
+<input id="long" placeholder="Enter long URL">
+<button id="create">Create Shortlink</button>
+<div class="list" id="list"></div>
+</div>
+
+<script>
+const create = document.getElementById('create'), long = document.getElementById('long'), list = document.getElementById('list');
+function load(){
+  list.innerHTML='';
+  const store = JSON.parse(localStorage.getItem('shorts')||'[]');
+  store.forEach(s=>{
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML = `<div style="max-width:70%"><b>${s.short}</b><div style="font-size:12px;color:#666">${s.long}</div></div><div><button data-short="${s.short}">Copy</button></div>`;
+    list.appendChild(div);
+    div.querySelector('button').addEventListener('click', e => { navigator.clipboard.writeText(s.short); e.target.innerText='Copied'; setTimeout(()=>e.target.innerText='Copy',900); });
+  });
+}
+create.addEventListener('click', ()=>{
+  const u = long.value.trim(); if(!u) return alert('Enter URL');
+  const id = Math.random().toString(36).slice(2,8);
+  const short = location.origin + location.pathname.replace(/index\.html$/,'') + 's/' + id; // local path
+  const store = JSON.parse(localStorage.getItem('shorts')||'[]');
+  store.unshift({short, long:u});
+  localStorage.setItem('shorts', JSON.stringify(store));
+  long.value='';
+  load();
+});
+load();
+</script>
+</body>
+</html>

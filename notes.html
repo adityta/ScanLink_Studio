@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Notes</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px}
+.box{max-width:800px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+textarea{width:100%;height:200px;padding:10px;border-radius:10px;border:1px solid #dcdfe6;margin-top:10px}
+button{padding:10px;width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Notes App (Local)</h2>
+
+<textarea id="note"></textarea>
+<button onclick="save()">Save</button>
+</div>
+
+<script>
+note.value=localStorage.getItem("note")||"";
+
+function save(){
+  localStorage.setItem("note",note.value);
+  alert("Saved!");
+}
+</script>
+
+</body>
+</html>

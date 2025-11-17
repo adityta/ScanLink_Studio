@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JPG to PNG</title>
+<style>
+body{font-family:Poppins;background:#f4f7fb;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button{padding:10px;width:100%;border-radius:10px;margin-top:10px}
+img{max-width:100%;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>JPG → PNG Converter</h2>
+<input type="file" id="file" accept="image/jpeg">
+<button id="go">Convert</button>
+<img id="out">
+</div>
+
+<script>
+go.onclick=()=>{
+  const f=file.files[0];
+  if(!f) return alert("Select JPG");
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    const ctx=c.getContext("2d");
+    c.width=img.width;c.height=img.height;
+    ctx.drawImage(img,0,0);
+    out.src=c.toDataURL("image/png");
+  };
+  img.src=URL.createObjectURL(f);
+};
+</script>
+</body>
+</html>

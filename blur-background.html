@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blur Background</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
+input,button,select{width:100%;padding:10px;border-radius:10px;margin-top:10px}
+img{max-width:100%;margin-top:10px;border-radius:10px}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Blur Background</h2>
+<input type="file" id="file">
+<select id="level">
+  <option value="2">Blur 2px</option>
+  <option value="5">5px</option>
+  <option value="10">10px</option>
+  <option value="20">20px</option>
+</select>
+<button id="go">Apply Blur</button>
+<img id="out">
+</div>
+
+<script>
+go.onclick=()=>{
+  const f=file.files[0];
+  if(!f) return alert("Select image");
+  const img=new Image();
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    const ctx=c.getContext("2d");
+    c.width=img.width; c.height=img.height;
+    ctx.filter=`blur(${level.value}px)`;
+    ctx.drawImage(img,0,0);
+    out.src=c.toDataURL("image/png");
+  };
+  img.src=URL.createObjectURL(f);
+};
+</script>
+</body>
+</html>

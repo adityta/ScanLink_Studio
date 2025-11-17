@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Logo Maker</title>
+<style>
+body{font-family:Poppins;background:#eef3ff;padding:18px}
+.box{max-width:760px;margin:auto;background:#fff;padding:14px;border-radius:12px}
+input,select,button{padding:8px;border-radius:8px;border:1px solid #e6e9ef;width:100%;margin-top:8px}
+canvas{display:block;margin-top:12px;border-radius:8px;border:1px solid #e6e9ef}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>Logo Maker</h2>
+<input id="text" placeholder="Brand name" value="ScanLink">
+<select id="font"><option>48px serif</option><option>48px sans-serif</option><option>48px monospace</option></select>
+<input type="color" id="color" value="#0f47d3">
+<button id="go">Generate Logo</button>
+<canvas id="c" width="600" height="180"></canvas>
+<button id="download">Download PNG</button>
+</div>
+
+<script>
+go.onclick=()=>{
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle='#fff';
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.fillStyle = color.value;
+  ctx.font = font.value;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(text.value, c.width/2, c.height/2);
+};
+download.onclick=()=>{ const a=document.createElement('a'); a.href=c.toDataURL(); a.download='logo.png'; a.click(); };
+go.click();
+</script>
+</body>
+</html>
