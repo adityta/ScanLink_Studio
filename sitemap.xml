@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- HOME PAGE -->
+  <url>
+    <loc>https://scanlinkstudio.online/</loc>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- QR TOOLS -->
+  <url><loc>https://scanlinkstudio.online/qr-scanner-pro.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/qr-generator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/batch-qr.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/vcard-qr.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/wifi-qr.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/qr-error.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/qr-decorator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/shortlink.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/utm-builder.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/image-qr-scanner.html</loc></url>
+
+  <!-- IMAGE TOOLS -->
+  <url><loc>https://scanlinkstudio.online/background-remover-touch.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/auto-bg-remover.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/image-compress.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/image-resize.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/jpg-to-png.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/png-to-jpg.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/images-to-pdf.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/pdf-to-image.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/watermark-tool.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/blur-background.html</loc></url>
+
+  <!-- TEXT TOOLS -->
+  <url><loc>https://scanlinkstudio.online/encrypt-decrypt.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/password-generator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/text-compare.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/notes.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/file-merge.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/html-to-md.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/json-formatter.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/beautifier.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/text-to-speech.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/speech-to-text.html</loc></url>
+
+  <!-- DEV TOOLS -->
+  <url><loc>https://scanlinkstudio.online/live-html-editor.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/hash-generator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/unit-converter.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/calculator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/color-picker.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/gradient-generator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/logo-maker.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/api-simulator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/code-minify.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/regex-tester.html</loc></url>
+
+  <!-- UTILITY / OTHER TOOLS -->
+  <url><loc>https://scanlinkstudio.online/audio-recorder.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/mp3-converter.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/file-manager.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/image-gallery.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/reminders.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/qr-to-image.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/screenshot-tool.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/color-contrast.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/sitemap-generator.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/pixelate-tool.html</loc></url>
+
+  <!-- LEGAL PAGES -->
+  <url><loc>https://scanlinkstudio.online/about.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/privacy.html</loc></url>
+  <url><loc>https://scanlinkstudio.online/contact.html</loc></url>
+
+</urlset>
