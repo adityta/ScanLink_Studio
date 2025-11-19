@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,38 +11,115 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PNG to JPG</title>
+<title>PNG → JPG Converter — ScanLink Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{font-family:Poppins;background:#eef3ff;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
-input,button{width:100%;padding:10px;border-radius:10px;margin-top:10px}
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111}
+
+  header{
+    background:linear-gradient(90deg,#0f47d3,#7c3aed);
+    padding:16px 20px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;font-weight:700;color:#021024}
+  nav a{color:#fff;margin-left:14px;text-decoration:none;font-weight:600}
+
+  .box{
+    max-width:650px;margin:20px auto;background:var(--card);
+    padding:22px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.06)
+  }
+  h2{text-align:center;color:var(--primary)}
+
+  button{
+    margin-top:14px;background:linear-gradient(90deg,#0f47d3,#7c3aed);
+    padding:10px 16px;border-radius:10px;border:0;color:#fff;
+    cursor:pointer;font-weight:700;width:100%
+  }
+
+  #preview{text-align:center;margin-top:20px}
+
+  footer{
+    margin-top:40px;background:linear-gradient(90deg,#0f47d3,#7c3aed);color:#fff;
+    text-align:center;padding:16px;
+  }
+  footer a{color:#fff;text-decoration:underline}
 </style>
 </head>
 <body>
+
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div style="font-size:18px;font-weight:700">ScanLink Studio</div>
+      <div style="font-size:12px;opacity:.8">All-in-one client-side tools</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
 <div class="box">
-<h2>PNG → JPG Converter</h2>
-<input type="file" id="file" accept="image/png">
-<button id="go">Convert</button>
-<img id="out">
+  <h2>PNG → JPG Converter</h2>
+
+  <input id="file" type="file" accept="image/png" style="width:100%">
+
+  <button onclick="convert()">Convert to JPG</button>
+
+  <div id="preview"></div>
 </div>
 
+<footer>
+  © 2025 ScanLink Studio —
+  <a href="privacy.html">Privacy</a>
+</footer>
+
 <script>
-go.onclick=()=>{
-  const f=file.files[0];
-  if(!f) return alert("Select PNG");
-  const img=new Image();
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    const ctx=c.getContext("2d");
-    c.width=img.width;c.height=img.height;
-    ctx.fillStyle="#fff"; ctx.fillRect(0,0,c.width,c.height);
-    ctx.drawImage(img,0,0);
-    out.src=c.toDataURL("image/jpeg",1);
+function convert(){
+  const file=document.getElementById("file").files[0];
+  if(!file){ alert("Please upload PNG file"); return; }
+
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement("canvas");
+      c.width=img.width; c.height=img.height;
+      const ctx=c.getContext("2d");
+
+      ctx.fillStyle="#fff";
+      ctx.fillRect(0,0,c.width,c.height);
+      ctx.drawImage(img,0,0);
+
+      const jpg=c.toDataURL("image/jpeg",1.0);
+
+      document.getElementById("preview").innerHTML=`
+        <a href="${jpg}" download="converted.jpg">
+          <button>Download JPG</button>
+        </a>
+        <div style="margin-top:12px">
+          <img src="${jpg}" style="max-width:100%">
+        </div>
+      `;
+    };
+    img.src=e.target.result;
   };
-  img.src=URL.createObjectURL(f);
-};
+  reader.readAsDataURL(file);
+}
 </script>
+
 </body>
 </html>
-
