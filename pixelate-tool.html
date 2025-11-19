@@ -1,14 +1,7 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pixelate Tool</title>
-<style>
-body{font-family:Poppins;background:#eef3ff;padding:18px}
-.container{max-width:760px;margin:auto;background:#fff;padding:14px;border-radius:12px}
-input,select,button{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:8px}
-canvas{display:block;margin-top:12px;max-width:100%;border-radius:8px}
-</style>
-</head>
-    <!-- Full Favicon Pack -->
+<html lang="en">
+<head>
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,36 +11,132 @@ canvas{display:block;margin-top:12px;max-width:100%;border-radius:8px}
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixelate Tool — ScanLink Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+}
+*{box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{margin:0;background:var(--bg);color:#111}
+
+/* HEADER */
+header{
+  background:linear-gradient(90deg,#0f47d3,#7c3aed);
+  color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px;
+}
+.logo{width:46px;height:46px;border-radius:10px;background:#fff;color:#0f47d3;
+  display:flex;align-items:center;justify-content:center;font-weight:700}
+.headTitle{font-size:18px;font-weight:700}
+
+/* Tool Container */
+.toolWrap{
+  max-width:760px;margin:24px auto;background:var(--card);
+  padding:20px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.05);
+}
+
+h2{margin-top:0;color:var(--primary)}
+
+input,select,button{
+  width:100%;padding:12px;border-radius:10px;border:1px solid #e5e8ef;
+  margin-top:12px;font-size:15px;
+}
+button{
+  background:var(--primary);color:white;border:0;cursor:pointer;
+  font-weight:600;transition:0.2s;
+}
+button:hover{opacity:0.85}
+
+canvas{
+  display:block;margin-top:16px;max-width:100%;border-radius:10px;
+  border:1px solid #e4e4ee;
+}
+
+.downloadBtn{
+  margin-top:14px;background:#10b981 !important;
+}
+
+footer{
+  text-align:center;color:#555;padding:20px 0;
+}
+</style>
+</head>
+
 <body>
-<div class="container">
-  <h2>Pixelate / Mosaic Tool</h2>
+
+<header>
+  <div class="logo">SL</div>
+  <div class="headTitle">Pixelate Tool</div>
+</header>
+
+<div class="toolWrap">
+  <h2>Pixelate / Mosaic Image</h2>
+
   <input type="file" id="file" accept="image/*">
-  <select id="size"><option value="8">8px</option><option value="12">12px</option><option value="20">20px</option></select>
+
+  <label>Pixel Size</label>
+  <select id="size">
+    <option value="8">8px</option>
+    <option value="12">12px</option>
+    <option value="18">18px</option>
+    <option value="25">25px</option>
+  </select>
+
   <button id="go">Apply Pixelate</button>
+
   <canvas id="c"></canvas>
+
+  <button id="download" class="downloadBtn" style="display:none;">Download Pixelated Image</button>
 </div>
 
+<footer>© 2025 ScanLink Studio</footer>
+
 <script>
-go.onclick=()=>{
-  const f=file.files[0]; if(!f) return alert('Select image');
-  const img=new Image();
-  img.onload=()=>{
-    const c=document.getElementById('c'), ctx=c.getContext('2d');
-    c.width=img.width; c.height=img.height;
-    const px = parseInt(size.value,10);
-    // draw small
-    const w = Math.ceil(img.width/px);
-    const h = Math.ceil(img.height/px);
-    const tmp = document.createElement('canvas'); tmp.width=w; tmp.height=h;
-    tmp.getContext('2d').drawImage(img,0,0,w,h);
-    // upscale to original with imageSmoothing disabled
+const fileInput = document.getElementById("file");
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+const btnDownload = document.getElementById("download");
+
+go.onclick = () => {
+  const f = fileInput.files[0];
+  if (!f) return alert("Select an image first!");
+
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    const px = parseInt(size.value);
+
+    const w = Math.ceil(img.width / px);
+    const h = Math.ceil(img.height / px);
+
+    const temp = document.createElement("canvas");
+    temp.width = w;
+    temp.height = h;
+    temp.getContext("2d").drawImage(img, 0, 0, w, h);
+
     ctx.imageSmoothingEnabled = false;
-    ctx.clearRect(0,0,c.width,c.height);
-    ctx.drawImage(tmp,0,0,w,h,0,0,c.width,c.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(temp, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
+
+    btnDownload.style.display = "block"; // show button
   };
-  img.src=URL.createObjectURL(f);
+
+  img.src = URL.createObjectURL(f);
+};
+
+btnDownload.onclick = () => {
+  const link = document.createElement("a");
+  link.download = "pixelated-image.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
 };
 </script>
+
 </body>
 </html>
-
