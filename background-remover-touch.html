@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <!-- Full Favicon Pack -->
+   <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,70 +11,444 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
-
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Background Remover (Touch)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Background Remover (Touch) — ScanLink Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Poppins;background:#f4f7fb;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px #0001}
-canvas{max-width:100%;border-radius:10px}
-input,button{padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:10px;width:100%}
+:root{--bg:#f4f6fb;--card:#fff;--primary:#0f47d3;--muted:#6b7280}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111;padding:18px}
+.container{max-width:980px;margin:18px auto;background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 28px rgba(3,10,34,0.06)}
+.header{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+.title{font-weight:700;color:var(--primary)}
+.topbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+input[type=file]{display:inline-block}
+.controls{display:flex;gap:8px;align-items:center;margin-top:12px}
+.btn{padding:8px 12px;border-radius:10px;border:0;background:var(--primary);color:#fff;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(15,71,211,0.12)}
+.small{padding:6px 8px;font-size:13px}
+.canvasWrap{position:relative;margin-top:14px;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);background:#fff}
+canvas{display:block;max-width:100%;width:100%;height:auto;touch-action:none}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.label{font-size:13px;color:var(--muted)}
+.footer{margin-top:14px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.badge{background:var(--primary);color:#fff;padding:6px 8px;border-radius:8px}
+.range{width:140px}
+.kv{font-weight:600;color:#111}
+.note{font-size:12px;color:#6b7280}
+@media (max-width:700px){.controls{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
+<div class="container">
+  <div class="header">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">Background Remover — Touch & Blur</div>
+      <div class="note">Client-side image editing • Touch / Pointer support • Progressive blur</div>
+    </div>
+  </div>
 
-<div class="box">
-<h2>Background Remover (Touch Eraser)</h2>
+  <div class="topbar">
+    <input id="file" type="file" accept="image/*">
+    <button id="autoBtn" class="btn ghost small">Auto Remove BG</button>
+    <button id="invertBtn" class="btn ghost small">Invert Mask</button>
+    <button id="clearBtn" class="btn ghost small">Clear Mask</button>
+    <button id="undoBtn" class="btn ghost small">Undo</button>
+    <button id="saveBtn" class="btn small" disabled>Download PNG</button>
+  </div>
 
-<input type="file" id="file" accept="image/*">
+  <div class="controls">
+    <div>
+      <div class="label">Brush size</div>
+      <input id="brush" class="range" type="range" min="6" max="200" value="48">
+    </div>
+    <div>
+      <div class="label">Mode</div>
+      <select id="mode" class="small">
+        <option value="erase">Erase (make transparent)</option>
+        <option value="paint">Paint mask (select area)</option>
+      </select>
+    </div>
+    <div>
+      <div class="label">Blur per click</div>
+      <input id="perClick" type="range" min="0" max="20" value="4" class="range">
+      <div class="note">Each pointertap increases blur in touched area by <span id="perClickVal">4</span>px</div>
+    </div>
+    <div>
+      <div class="label">Total Blur (live)</div>
+      <div class="badge" id="totalBlur">0px</div>
+    </div>
+  </div>
 
-<canvas id="c"></canvas>
+  <div class="canvasWrap" id="canvasWrap">
+    <canvas id="out"></canvas>
+  </div>
 
-<button id="save">Download PNG</button>
+  <div class="tools">
+    <div class="label">Advanced:</div>
+    <button id="featherBtn" class="btn ghost small">Feather Mask</button>
+    <button id="fillBtn" class="btn ghost small">Fill Selection</button>
+    <button id="invertColors" class="btn ghost small">Preview BG Removed</button>
+  </div>
+
+  <div class="footer">
+    <div class="note">Tip: Use touch or mouse to paint. Tap/click repeatedly to increase blur amount where you touch.</div>
+    <div class="kv">Ready</div>
+  </div>
 </div>
 
 <script>
-const file=document.getElementById("file");
-const c=document.getElementById("c");
-const ctx=c.getContext("2d");
-let img=null, drawing=false;
+// This tool is built to plug into the ScanLink Studio index.html theme. It uses an editable mask canvas
+// and an offscreen blurred copy to progressively blur regions when the user clicks/taps. It also supports
+// touch/pointer events, undo stack, download and an auto threshold remove (based on original file).
 
-file.onchange=e=>{
-  const f=e.target.files[0];
-  if(!f) return;
+const fileInput = document.getElementById('file');
+const out = document.getElementById('out');
+const ctx = out.getContext('2d');
+const brushRange = document.getElementById('brush');
+const modeSel = document.getElementById('mode');
+const saveBtn = document.getElementById('saveBtn');
+const autoBtn = document.getElementById('autoBtn');
+const clearBtn = document.getElementById('clearBtn');
+const invertBtn = document.getElementById('invertBtn');
+const undoBtn = document.getElementById('undoBtn');
+const perClick = document.getElementById('perClick');
+const perClickVal = document.getElementById('perClickVal');
+const totalBlurEl = document.getElementById('totalBlur');
+const featherBtn = document.getElementById('featherBtn');
+const fillBtn = document.getElementById('fillBtn');
+const invertColors = document.getElementById('invertColors');
 
-  img=new Image();
-  img.onload=()=>{
-    c.width=img.width;
-    c.height=img.height;
-    ctx.drawImage(img,0,0);
-  };
-  img.src=URL.createObjectURL(f);
-};
+let img = new Image();
+let imgLoaded=false;
+let width=800, height=500;
 
-c.addEventListener("touchstart",()=>drawing=true);
-c.addEventListener("touchend",()=>drawing=false);
-c.addEventListener("touchmove",e=>{
-  if(!drawing) return;
-  const r=c.getBoundingClientRect();
-  const x=e.touches[0].clientX-r.left;
-  const y=e.touches[0].clientY-r.top;
-  ctx.globalCompositeOperation="destination-out";
-  ctx.beginPath();
-  ctx.arc(x,y,20,0,Math.PI*2);
-  ctx.fill();
+// Offscreen canvases
+let originalCanvas = document.createElement('canvas');
+let originalCtx = originalCanvas.getContext('2d');
+let blurredCanvas = document.createElement('canvas');
+let blurredCtx = blurredCanvas.getContext('2d');
+let maskCanvas = document.createElement('canvas');
+let maskCtx = maskCanvas.getContext('2d');
+
+// State
+let isDrawing=false;
+let lastPoint = null;
+let brushSize = parseInt(brushRange.value,10);
+let mode = modeSel.value; // 'erase' means make transparent (mask=1 for transparent), 'paint' means mask area
+let blurPerClick = parseInt(perClick.value,10);
+let totalBlur = 0; // displayed as total blur applied so far (largest applied value anywhere)
+let undoStack = [];
+
+function resizeCanvases(w,h){
+  width=w; height=h;
+  [out, originalCanvas, blurredCanvas, maskCanvas].forEach(c=>{ c.width = w; c.height = h; });
+}
+
+function resetMask(){
+  maskCtx.clearRect(0,0,maskCanvas.width,maskCanvas.height);
+}
+
+function pushUndo(){
+  // store mask snapshot
+  try{
+    undoStack.push(maskCtx.getImageData(0,0,maskCanvas.width,maskCanvas.height));
+    if(undoStack.length>12) undoStack.shift();
+  }catch(e){/*ignore*/}
+}
+
+function undo(){
+  if(undoStack.length===0) return;
+  const imgd = undoStack.pop();
+  maskCtx.putImageData(imgd,0,0);
+  render();
+}
+
+function drawBrush(x,y,size,modeLocal){
+  maskCtx.save();
+  maskCtx.globalCompositeOperation = (modeLocal==='erase') ? 'destination-out' : 'source-over';
+  maskCtx.beginPath();
+  maskCtx.fillStyle = 'rgba(0,0,0,1)';
+  maskCtx.arc(x,y,size/2,0,Math.PI*2);
+  maskCtx.fill();
+  maskCtx.restore();
+}
+
+function applyBlurAtMask(){
+  // We composite blurred regions only where mask has content. The blur radius used increases by blurPerClick.
+  // Approach: draw original -> draw blurred copy masked by maskCanvas -> composite onto out.
+
+  // Prepare blurred version using the current totalBlur value.
+  blurredCtx.clearRect(0,0,blurredCanvas.width,blurredCanvas.height);
+  if(totalBlur>0){
+    blurredCtx.filter = `blur(${totalBlur}px)`;
+  } else {
+    blurredCtx.filter = 'none';
+  }
+  blurredCtx.drawImage(originalCanvas,0,0);
+  blurredCtx.filter = 'none';
+
+  // Now render: draw original
+  ctx.clearRect(0,0,out.width,out.height);
+  ctx.drawImage(originalCanvas,0,0);
+
+  // Create temporary: copy blurred where mask exists
+  // We'll use maskCanvas as an alpha mask. Steps:
+  // 1) create a temporary canvas 'tmp' with blurred image
+  const tmp = document.createElement('canvas');
+  tmp.width = width; tmp.height = height;
+  const tctx = tmp.getContext('2d');
+  tctx.drawImage(blurredCanvas,0,0);
+
+  // 2) use mask to keep only masked pixels: set composite to destination-in and draw mask onto tmp
+  tctx.globalCompositeOperation = 'destination-in';
+  tctx.drawImage(maskCanvas,0,0);
+
+  // 3) draw tmp over main canvas
+  ctx.drawImage(tmp,0,0);
+
+  // Additionally show mask overlay for editing (semi-transparent red overlay where mask exists)
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = 0.18;
+  ctx.drawImage(maskCanvas,0,0);
+  ctx.restore();
+}
+
+function render(){
+  applyBlurAtMask();
+  saveBtn.disabled = !imgLoaded;
+  totalBlurEl.textContent = totalBlur + 'px';
+}
+
+// Pointer events for touch & mouse
+function getPointerPos(e){
+  const rect = out.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (out.width / rect.width);
+  const y = (e.clientY - rect.top) * (out.height / rect.height);
+  return {x,y};
+}
+
+out.addEventListener('pointerdown', e=>{
+  if(!imgLoaded) return;
+  out.setPointerCapture(e.pointerId);
+  isDrawing=true;
+  lastPoint = getPointerPos(e);
+  pushUndo();
+  // Each pointerdown counts as a "click" that increases blur in that area
+  totalBlur += blurPerClick;
+  drawBrush(lastPoint.x,lastPoint.y,brushSize,mode);
+  render();
 });
 
-document.getElementById("save").onclick=()=>{
-  const a=document.createElement("a");
-  a.href=c.toDataURL("image/png");
-  a.download="removed.png";
-  a.click();
-};
-</script>
+out.addEventListener('pointermove', e=>{
+  if(!isDrawing || !imgLoaded) return;
+  const p = getPointerPos(e);
+  // draw line between lastPoint and p
+  const dx = p.x - lastPoint.x; const dy = p.y - lastPoint.y;
+  const dist = Math.hypot(dx,dy);
+  const steps = Math.max(1, Math.floor(dist / (brushSize/6)));
+  for(let i=0;i<steps;i++){
+    const t = i/steps;
+    const x = lastPoint.x + dx*t;
+    const y = lastPoint.y + dy*t;
+    drawBrush(x,y,brushSize,mode);
+  }
+  lastPoint = p;
+  render();
+});
 
+out.addEventListener('pointerup', e=>{
+  if(!imgLoaded) return;
+  out.releasePointerCapture(e.pointerId);
+  isDrawing=false;
+});
+
+// File load
+fileInput.addEventListener('change', (ev)=>{
+  const f = ev.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    img = new Image();
+    img.onload = ()=>{
+      imgLoaded = true;
+      resizeCanvases(img.width, img.height);
+      // draw original
+      originalCtx.clearRect(0,0,originalCanvas.width,originalCanvas.height);
+      originalCtx.drawImage(img,0,0);
+      // initialize mask
+      resetMask();
+      undoStack = [];
+      totalBlur = 0;
+      render();
+      // fit display size
+      fitToContainer();
+    };
+    img.src = r.result;
+  };
+  r.readAsDataURL(f);
+});
+
+// Auto threshold remove (simple white removal as in original tool)
+autoBtn.addEventListener('click', ()=>{
+  if(!imgLoaded) return alert('Upload image first');
+  pushUndo();
+  // sample pixels and remove near-white regions from mask (make them transparent)
+  const t = 30; // threshold - could be exposed
+  const id = originalCtx.getImageData(0,0,originalCanvas.width,originalCanvas.height);
+  const d = id.data;
+  maskCtx.clearRect(0,0,maskCanvas.width,maskCanvas.height);
+  for(let i=0;i<d.length;i+=4){
+    const r = d[i], g = d[i+1], b = d[i+2];
+    if(r>255-t && g>255-t && b>255-t){
+      // paint mask at this pixel to make it transparent in final (we use destination-out style), so we draw opaque on mask
+      const px = (i/4)%maskCanvas.width;
+      const py = Math.floor((i/4)/maskCanvas.width);
+      maskCtx.fillStyle = '#000';
+      maskCtx.fillRect(px,py,1,1);
+    }
+  }
+  render();
+});
+
+// Clear mask
+clearBtn.addEventListener('click', ()=>{ pushUndo(); resetMask(); render(); });
+
+// Invert mask
+invertBtn.addEventListener('click', ()=>{
+  pushUndo();
+  const id = maskCtx.getImageData(0,0,maskCanvas.width,maskCanvas.height);
+  const d = id.data;
+  for(let i=0;i<d.length;i+=4){ d[i]=255-d[i]; d[i+1]=255-d[i+1]; d[i+2]=255-d[i+2]; d[i+3]=d[i+3]; }
+  maskCtx.putImageData(id,0,0);
+  render();
+});
+
+undoBtn.addEventListener('click', ()=>{ undo(); });
+
+// Brush & mode controls
+brushRange.addEventListener('input', e=>{ brushSize = parseInt(e.target.value,10); });
+modeSel.addEventListener('change', e=>{ mode = e.target.value; });
+perClick.addEventListener('input', e=>{ blurPerClick = parseInt(e.target.value,10); perClickVal.textContent = blurPerClick; });
+
+// Save: composite result so transparent areas remain transparent
+saveBtn.addEventListener('click', ()=>{
+  if(!imgLoaded) return;
+  // create output canvas
+  const outFinal = document.createElement('canvas');
+  outFinal.width = width; outFinal.height = height;
+  const oc = outFinal.getContext('2d');
+  // draw original
+  oc.drawImage(originalCanvas,0,0);
+  // create blurred image and composite where mask exists
+  const blurredTmp = document.createElement('canvas'); blurredTmp.width=width; blurredTmp.height=height;
+  const bctx = blurredTmp.getContext('2d');
+  bctx.filter = `blur(${totalBlur}px)`;
+  bctx.drawImage(originalCanvas,0,0);
+  bctx.filter = 'none';
+  // mask out the blurred to keep only mask area
+  bctx.globalCompositeOperation = 'destination-in';
+  bctx.drawImage(maskCanvas,0,0);
+  // draw blurred parts over original
+  oc.drawImage(blurredTmp,0,0);
+  // remove masked regions (if using erase mode we want transparency where mask defines)
+  // We will use the mask as alpha: create alpha from mask
+  const finalData = oc.getImageData(0,0,width,height);
+  const maskData = maskCtx.getImageData(0,0,width,height).data;
+  for(let i=0;i<finalData.data.length;i+=4){
+    // where mask has alpha (dark pixels), we'll set transparency
+    const m = maskData[i]; // 0..255
+    if(m>10){
+      // set alpha lower — here we make masked pixels transparent
+      finalData.data[i+3] = 0;
+    }
+  }
+  oc.putImageData(finalData,0,0);
+
+  // download
+  const a = document.createElement('a');
+  a.href = outFinal.toDataURL('image/png');
+  a.download = 'bg-removed.png';
+  a.click();
+});
+
+// Feather mask (simple blur on mask canvas)
+featherBtn.addEventListener('click', ()=>{
+  pushUndo();
+  // draw mask onto temp and apply canvas blur filter then redraw
+  const tmp = document.createElement('canvas'); tmp.width=width; tmp.height=height;
+  const t = tmp.getContext('2d');
+  t.drawImage(maskCanvas,0,0);
+  t.filter = 'blur(8px)';
+  t.drawImage(tmp,0,0);
+  // copy back
+  maskCtx.clearRect(0,0,width,height);
+  maskCtx.drawImage(tmp,0,0);
+  render();
+});
+
+// Fill selection (flood fill from center)
+fillBtn.addEventListener('click', ()=>{
+  pushUndo();
+  // simply fill entire mask with opaque so blurred area becomes whole image
+  maskCtx.fillStyle = '#000';
+  maskCtx.fillRect(0,0,width,height);
+  render();
+});
+
+// invertColors acts as preview toggle between showing background removed (transparent) or normal
+let previewRemoved=false;
+invertColors.addEventListener('click', ()=>{
+  previewRemoved = !previewRemoved;
+  if(previewRemoved){
+    // show final with transparent areas (draw checkerboard)
+    ctx.clearRect(0,0,width,height);
+    // draw checkerboard
+    const box=20;
+    for(let y=0;y<height;y+=box){
+      for(let x=0;x<width;x+=box){
+        ctx.fillStyle = ((x/box+y/box)%2===0) ? '#eee' : '#ddd';
+        ctx.fillRect(x,y,box,box);
+      }
+    }
+    // draw final composited image with transparency
+    const outFinal = document.createElement('canvas'); outFinal.width=width; outFinal.height=height;
+    const oc = outFinal.getContext('2d');
+    oc.drawImage(originalCanvas,0,0);
+    // remove masked regions
+    const fd = oc.getImageData(0,0,width,height);
+    const md = maskCtx.getImageData(0,0,width,height).data;
+    for(let i=0;i<fd.data.length;i+=4){ if(md[i]>10) fd.data[i+3]=0; }
+    oc.putImageData(fd,0,0);
+    ctx.drawImage(outFinal,0,0);
+  } else {
+    render();
+  }
+});
+
+// Utility: fit canvas to container width while keeping aspect ratio
+function fitToContainer(){
+  const wrap = document.getElementById('canvasWrap');
+  const maxW = Math.min(wrap.clientWidth, 920);
+  // set style width to 100% (CSS handles it). We ensure logical pixel size remains image size.
+  out.style.width = '100%';
+}
+
+// initialize with placeholder blank
+(function initPlace(){
+  resizeCanvases(width,height);
+  originalCtx.fillStyle='#fff'; originalCtx.fillRect(0,0,width,height);
+  maskCtx.clearRect(0,0,width,height);
+  render();
+})();
+
+// responsive on window resize
+window.addEventListener('resize', ()=>{ fitToContainer(); });
+
+</script>
 </body>
 </html>
-
-
