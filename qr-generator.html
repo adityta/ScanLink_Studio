@@ -1,7 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="hi">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -13,62 +13,168 @@
   <script src="seo-auto.js"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>QR Generator</title>
-<!-- QRCode.js (lightweight) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<title>ScanLink Studio — QR Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- qrcode lib CDN (required) -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 <style>
-  body{font-family:Poppins,system-ui;background:#f4f7fb;margin:0;padding:20px}
-  .wrap{max-width:720px;margin:12px auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
-  h1{color:#0f47d3}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-  input,select,button{padding:10px;border-radius:10px;border:1px solid #e6e9ef}
-  #qrcode{margin-top:14px;padding:12px;background:#fff;border-radius:8px}
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+    --glass: rgba(15,71,211,0.06);
+    --accent:#0f47d3; --accent2:#7c3aed;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111;padding-bottom:80px}
+  header{background:linear-gradient(90deg,var(--primary),#7c3aed);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+  .title{font-size:16px;font-weight:700}
+  nav a{color:white;text-decoration:none;margin-left:14px;font-weight:600}
+  .container{max-width:1100px;margin:18px auto;padding:18px}
+  .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.04)}
+  .row{display:flex;gap:16px;align-items:flex-start}
+  input[type="text"], select {width:100%; padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:14px}
+  .qbox{width:300px;height:300px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
+  .controls{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700;background:#eef2ff;color:var(--primary)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
+  .muted{color:var(--muted);font-size:13px}
+  footer{background:linear-gradient(90deg,var(--primary),#7c3aed);color:#fff;text-align:center;padding:14px 12px;position:fixed;left:0;right:0;bottom:0}
+  @media(max-width:900px){ .row{flex-direction:column} .qbox{width:220px;height:220px} }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>QR Generator</h1>
-  <div>
-    <input id="text" placeholder="Text or URL" style="width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef">
+
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.9)">All-in-one client-side tools</div>
+    </div>
   </div>
-  <div class="row">
-    <select id="size"><option>128</option><option selected>256</option><option>512</option></select>
-    <input id="color" type="color" value="#0f47d3">
-    <button id="gen">Generate</button>
-    <button id="download">Download PNG</button>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+    <div style="font-weight:800;font-size:20px;color:var(--primary)">QR Generator</div>
+    <div class="muted">Fast · Private · Client-side</div>
   </div>
 
-  <div id="qrcode"></div>
-</div>
+  <div class="card">
+    <div class="row">
+      <div style="flex:1;min-width:260px">
+        <label class="muted">Link / URL</label>
+        <input id="genInput" type="text" placeholder="example.com or https://..." />
+        <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <select id="genMode"><option value="classic">Classic</option><option value="dots">Dots</option></select>
+          <input id="genColor" type="color" value="#000000" style="height:40px;width:48px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)">
+          <label class="btn" style="background:rgba(15,71,211,0.06);color:var(--primary);cursor:pointer">Logo <input id="genLogoFile" type="file" accept="image/*" style="display:none"></label>
+          <button id="genGo" class="btn primary">Generate</button>
+        </div>
+
+        <div style="margin-top:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <label class="muted"><input id="genRemoveWhite" type="checkbox" checked> Remove white bg (logo)</label>
+          <label class="muted">Threshold <input id="genThreshold" type="range" min="200" max="255" value="240"></label>
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <button id="genDlPng" class="btn">Download PNG</button>
+          <button id="genDlSvg" class="btn">Download SVG</button>
+          <button id="genCopyLink" class="btn">Copy Link</button>
+          <button id="genCreateShort" class="btn">Create Short</button>
+          <button id="genOpenShort" class="btn">Open Latest Short</button>
+        </div>
+
+        <div id="genPreviewText" class="muted" style="margin-top:10px"></div>
+      </div>
+
+      <div style="width:320px;text-align:center">
+        <div class="qbox"><div id="qGenerated"></div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2025 ScanLink Studio · <a href="about.html" style="color:#fff;text-decoration:underline">About</a> · <a href="privacy.html" style="color:#fff;text-decoration:underline">Privacy</a>
+</footer>
 
 <script>
-let qrcodeEl = document.getElementById('qrcode');
-let qrcode;
-function generate(){
-  const text = document.getElementById('text').value.trim();
-  const size = parseInt(document.getElementById('size').value,10) || 256;
-  const color = document.getElementById('color').value || '#0f47d3';
-  qrcodeEl.innerHTML='';
-  qrcode = new QRCode(qrcodeEl, { text:text||' ', width:size, height:size, colorDark:color, colorLight:'#ffffff' });
-}
-document.getElementById('gen').addEventListener('click', generate);
+/* Local helpers (same logic as before) */
+const SHORT_KEY='sl_v7_shorts', HISTORY_KEY='sl_v7_history';
+function loadShorts(){ try{return JSON.parse(localStorage.getItem(SHORT_KEY)||'{}')}catch(e){return {}} }
+function saveShorts(o){ localStorage.setItem(SHORT_KEY, JSON.stringify(o)) }
+function saveHistoryItem(it){ try{ const a=JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); a.unshift(it); localStorage.setItem(HISTORY_KEY, JSON.stringify(a)); }catch(e){} }
 
-document.getElementById('download').addEventListener('click', ()=>{
-  if(!qrcode) { alert('Generate first'); return; }
-  // qrcode uses an img or canvas inside qrcodeEl
-  const img = qrcodeEl.querySelector('img') || qrcodeEl.querySelector('canvas');
-  if(!img) { alert('No QR found'); return; }
-  if(img.tagName.toLowerCase()==='img'){
-    const a=document.createElement('a');
-    a.href=img.src; a.download='qr.png'; a.click();
-  } else {
-    img.toBlob(blob=>{
-      const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob); a.download='qr.png'; a.click();
-    });
-  }
+let lastPNG=null, lastSVG=null, logoDataURL=null;
+
+document.getElementById('genLogoFile').addEventListener('change', (e)=> {
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader(); r.onload=async ()=> {
+    const img=new Image(); img.src=r.result; await img.decode();
+    const MAX=360; const scale=Math.min(1, MAX/Math.max(img.naturalWidth,img.naturalHeight));
+    const w=Math.round(img.naturalWidth*scale), h=Math.round(img.naturalHeight*scale);
+    const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,w,h);
+    if(document.getElementById('genRemoveWhite').checked){
+      try{ const id=ctx.getImageData(0,0,w,h); const d=id.data; const thr=parseInt(document.getElementById('genThreshold').value,10)||240;
+        for(let i=0;i<d.length;i+=4){ if(d[i]>=thr && d[i+1]>=thr && d[i+2]>=thr) d[i+3]=0;}
+        ctx.putImageData(id,0,0);
+      }catch(e){}
+    }
+    logoDataURL=c.toDataURL('image/png'); alert('Logo processed');
+  }; r.readAsDataURL(f);
+});
+
+async function generateQR(raw, color='#000'){
+  let link=(raw||'').trim(); if(!link) return alert('Enter link');
+  if(!link.startsWith('s/') && !/^https?:\/\//i.test(link)) link='https://'+link;
+  document.getElementById('genPreviewText').innerText=link;
+  try{
+    lastPNG = await QRCode.toDataURL(link, {width:300, margin:1, color:{dark:color, light:'#ffffff'}});
+    if(logoDataURL){
+      const base=new Image(); base.src=lastPNG; await base.decode();
+      const logo=new Image(); logo.src=logoDataURL; await logo.decode();
+      const c=document.createElement('canvas'); c.width=base.naturalWidth; c.height=base.naturalHeight; const ctx=c.getContext('2d');
+      ctx.drawImage(base,0,0);
+      const size=Math.floor(c.width*0.18); const x=(c.width-size)/2, y=(c.height-size)/2;
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(c.width/2, c.height/2, size/1.6,0,Math.PI*2); ctx.fill();
+      ctx.drawImage(logo,x,y,size,size);
+      lastPNG=c.toDataURL('image/png');
+    }
+    lastSVG = await new Promise((res,rej)=> QRCode.toString(link,{type:'svg',color:{dark:color,light:'#ffffff'}},(err,svg)=>err?rej(err):res(svg)));
+    if(logoDataURL && lastSVG){
+      const parser=new DOMParser(); const doc=parser.parseFromString(lastSVG,'image/svg+xml'); const svg=doc.documentElement;
+      if(!svg.getAttribute('viewBox')) svg.setAttribute('viewBox','0 0 256 256');
+      const vb=svg.getAttribute('viewBox').split(' ').map(Number); const vw=vb[2]||256;
+      const size=Math.floor(vw*0.18);
+      const circ=doc.createElementNS('http://www.w3.org/2000/svg','circle'); circ.setAttribute('cx',vw/2); circ.setAttribute('cy',vw/2); circ.setAttribute('r',size/1.6); circ.setAttribute('fill','#fff');
+      const img=doc.createElementNS('http://www.w3.org/2000/svg','image'); img.setAttribute('href',logoDataURL); img.setAttribute('width',size); img.setAttribute('height',size); img.setAttribute('x',(vw-size)/2); img.setAttribute('y',(vw-size)/2);
+      svg.appendChild(circ); svg.appendChild(img); lastSVG=new XMLSerializer().serializeToString(svg);
+    }
+    document.getElementById('qGenerated').innerHTML=''; const im=new Image(); im.src=lastPNG; document.getElementById('qGenerated').appendChild(im);
+    saveHistoryItem({link:link,ts:new Date().toLocaleString(),label:'generate'});
+  }catch(e){ console.error(e); alert('QR generation failed'); }
+}
+
+document.getElementById('genGo').addEventListener('click', ()=> generateQR(document.getElementById('genInput').value, document.getElementById('genColor').value));
+document.getElementById('genDlPng').addEventListener('click', ()=> { if(!lastPNG) return alert('Generate first'); const a=document.createElement('a'); a.href=lastPNG; a.download='scanlink_qr.png'; a.click(); });
+document.getElementById('genDlSvg').addEventListener('click', ()=> { if(!lastSVG) return alert('Generate SVG first'); const blob=new Blob([lastSVG],{type:'image/svg+xml'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='scanlink_qr.svg'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); });
+document.getElementById('genCopyLink').addEventListener('click', ()=> { const t=document.getElementById('genPreviewText').innerText; if(!t) return alert('No link'); navigator.clipboard.writeText(t); alert('Copied'); });
+document.getElementById('genCreateShort').addEventListener('click', ()=> {
+  const link=document.getElementById('genPreviewText').innerText||document.getElementById('genInput').value; if(!link) return alert('No link');
+  let long=link; if(!long.startsWith('s/') && !/^https?:\/\//i.test(long)) long='https://'+long;
+  const store=loadShorts(); const id=Math.random().toString(36).slice(2,8); store[id]={target:long,created:new Date().toISOString()}; saveShorts(store); navigator.clipboard.writeText('s/'+id); saveHistoryItem({link:'s/'+id,ts:new Date().toLocaleString(),label:'short'}); alert('Short created: s/'+id);
+});
+document.getElementById('genOpenShort').addEventListener('click', ()=> {
+  const s=loadShorts(); const keys=Object.keys(s); if(!keys.length) return alert('No shorts'); window.open(s[keys[0]].target,'_blank');
 });
 </script>
 </body>
 </html>
-
