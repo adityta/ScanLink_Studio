@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -13,142 +13,428 @@
   <script src="seo-auto.js"></script>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>QR Scanner Pro</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<title>QR Scanner Pro — ScanLink Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
 <style>
-  body{font-family:Poppins,system-ui;background:#f4f7fb;margin:0;padding:20px}
-  .wrap{max-width:820px;margin:12px auto;background:#fff;padding:18px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
-  h1{margin:0 0 8px;color:#0f47d3}
-  .controls{display:flex;gap:8px;flex-wrap:wrap}
-  button,input{padding:10px 12px;border-radius:10px;border:0;cursor:pointer}
-  .btn-primary{background:#0f47d3;color:#fff}
-  .btn-ghost{background:#fff;border:1px solid #e6e9ef}
-  video{width:100%;border-radius:10px;margin-top:12px}
-  canvas{display:none}
-  #result{display:none;margin-top:12px;padding:12px;background:#eaf0ff;border-left:4px solid #0f47d3;border-radius:8px}
-  .actions{display:flex;gap:8px;margin-top:10px}
-  .actions button{flex:1}
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+    --accent-green: #19c37d;
+    --glass: rgba(15,71,211,0.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#0b1020;-webkit-font-smoothing:antialiased}
+  header{
+    background:linear-gradient(90deg,#0f47d3,#7c3aed);
+    padding:14px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+  nav a{color:#fff;margin-left:12px;text-decoration:none;font-weight:600}
+
+  main.container{max-width:960px;margin:22px auto;padding:18px}
+  .toolBox{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
+  h1{margin:0 0 8px;color:var(--primary);font-size:20px}
+  p.sub{margin:0 0 14px;color:var(--muted);font-size:13px}
+
+  /* Controls */
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .btn{
+    padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:700;color:#fff;
+    background:linear-gradient(90deg,#0f47d3,#7c3aed);box-shadow:0 8px 20px rgba(15,71,211,0.12);
+    transform:translateZ(0);transition:transform .18s ease,box-shadow .18s ease,opacity .18s;
+  }
+  .btn.ghost{background:#fff;border:1px solid rgba(0,0,0,0.06);color:#111;box-shadow:none}
+  .btn:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 18px 40px rgba(15,71,211,0.12)}
+  .btn:active{transform:translateY(-1px) scale(0.998)}
+
+  /* Preview area */
+  .previewWrap{position:relative;border-radius:12px;overflow:hidden;background:#000;height:480px;display:flex;align-items:center;justify-content:center}
+  video#vid{width:100%;height:100%;object-fit:cover;display:block}
+  canvas#overlay{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+
+  /* Overlay frame + laser */
+  .frame{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:74%;max-width:720px;height:62%;border-radius:14px;
+    box-shadow:0 0 0 9999px rgba(0,0,0,0.25) inset;pointer-events:none;
+    border:2px solid rgba(255,255,255,0.06);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .frame:before, .frame:after{content:"";position:absolute;pointer-events:none}
+  /* decorative corner accents */
+  .frame:before{
+    width:calc(100% + 20px);height:calc(100% + 20px);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.25) inset;opacity:.12
+  }
+  /* moving laser bar */
+  .laser{
+    position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg, rgba(25,195,125,0), rgba(25,195,125,0.95), rgba(25,195,125,0));
+    animation:laserMove 2.1s linear infinite;
+    filter:drop-shadow(0 6px 14px rgba(25,195,125,0.15));
+  }
+  @keyframes laserMove{
+    0%{transform:translateY(-48%)}
+    50%{transform:translateY(48%)}
+    100%{transform:translateY(-48%)}
+  }
+
+  /* Result card */
+  .resultCard{
+    position:relative;margin-top:14px;padding:14px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#f8fbff);
+    box-shadow:0 12px 40px rgba(12,30,80,0.08);display:flex;gap:12px;align-items:center;justify-content:space-between;
+    border:1px solid rgba(15,71,211,0.06);
+  }
+  .resultLeft{flex:1}
+  .resultTitle{font-weight:700;color:#0b1020;margin-bottom:6px}
+  .resultText{font-size:13px;color:var(--muted);word-break:break-all}
+  .resultActions{display:flex;gap:8px;align-items:center;margin-left:12px}
+  .smallBtn{padding:8px 10px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:700;cursor:pointer;transition:transform .12s}
+  .smallBtn:hover{transform:translateY(-4px)}
+  .openBtn{background:linear-gradient(90deg,#00b894,#19c37d)}
+  .copyBtn{background:linear-gradient(90deg,#00d2ff,#9b5cff)}
+  .shareBtn{background:linear-gradient(90deg,#f6d365,#fda085)}
+
+  /* blinking success ring */
+  .detectedGlow{position:absolute;inset:-8px;border-radius:14px;box-shadow:0 0 34px rgba(25,195,125,0.14);pointer-events:none;opacity:0;transform:scale(.96);animation:glowPulse .9s ease-out 1}
+  @keyframes glowPulse{from{opacity:1;transform:scale(.98)} to{opacity:0;transform:scale(1.04)}}
+
+  /* small helpers */
+  .muted{color:var(--muted);font-size:13px}
+  .hidden{display:none}
+
+  /* responsive tweaks */
+  @media (max-width:720px){
+    .previewWrap{height:360px}
+    .frame{width:86%;height:66%}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>QR Scanner Pro</h1>
-  <div class="controls">
-    <button id="startBtn" class="btn-primary">Start Camera</button>
-    <button id="stopBtn" class="btn-ghost" style="display:none">Stop Camera</button>
-    <label class="btn-ghost" style="cursor:pointer">
-      <input id="file" type="file" accept="image/*" style="display:none"> Upload Image
-    </label>
+
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div style="font-size:16px;font-weight:700">ScanLink Studio</div>
+      <div style="font-size:12px;opacity:.85">QR Scanner Pro</div>
+    </div>
   </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="qr-generator.html">Generator</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
 
-  <div style="position:relative;margin-top:12px">
-    <video id="video" playsinline></video>
+<main class="container">
+  <div class="toolBox">
+    <h1>QR Scanner Pro</h1>
+    <p class="sub">Premium client-side scanner — camera + upload. Laser animation, sound, vibration & stylish results.</p>
+
+    <div class="controls">
+      <button id="startBtn" class="btn">Start Camera</button>
+      <button id="stopBtn" class="btn ghost">Stop</button>
+      <button id="uploadBtn" class="btn ghost">Upload Image</button>
+      <input id="upload" type="file" accept="image/*" class="hidden">
+      <div style="flex:1"></div>
+      <div class="muted" id="status">Idle</div>
+    </div>
+
+    <div class="previewWrap" id="previewWrap">
+      <video id="vid" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+
+      <div class="frame" aria-hidden="true">
+        <div class="laser" style="top:0"></div>
+      </div>
+    </div>
+
+    <div id="resultArea" class="hidden">
+      <div class="resultCard" id="resultCard">
+        <div class="resultLeft">
+          <div class="resultTitle">QR Detected</div>
+          <div id="resultText" class="resultText"></div>
+          <div id="resultMeta" class="muted" style="margin-top:6px;font-size:12px"></div>
+        </div>
+        <div class="resultActions">
+          <button id="openBtn" class="smallBtn openBtn">Open</button>
+          <button id="copyBtn" class="smallBtn copyBtn">Copy</button>
+          <button id="shareBtn" class="smallBtn shareBtn">Share</button>
+        </div>
+        <div id="glow" class="detectedGlow hidden"></div>
+      </div>
+    </div>
+
   </div>
+</main>
 
-  <canvas id="canvas"></canvas>
-
-  <div id="result"><strong>Result:</strong><div id="resultText"></div></div>
-
-  <div class="actions">
-    <button id="copyBtn" class="btn-primary" style="display:none">Copy</button>
-    <button id="openBtn" class="btn-ghost" style="display:none">Open Link</button>
-    <button id="saveBtn" class="btn-ghost" style="display:none">Download TXT</button>
-  </div>
-</div>
+<footer style="text-align:center;padding:16px;color:var(--muted)">© 2025 ScanLink Studio</footer>
 
 <script>
+/* Elements */
 const startBtn = document.getElementById('startBtn');
-const stopBtn = document.getElementById('stopBtn');
-const fileInput = document.getElementById('file');
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const result = document.getElementById('result');
+const stopBtn  = document.getElementById('stopBtn');
+const uploadBtn = document.getElementById('uploadBtn');
+const uploadInput = document.getElementById('upload');
+const vid = document.getElementById('vid');
+const overlay = document.getElementById('overlay');
+const previewWrap = document.getElementById('previewWrap');
+const status = document.getElementById('status');
+const resultArea = document.getElementById('resultArea');
 const resultText = document.getElementById('resultText');
-const copyBtn = document.getElementById('copyBtn');
+const resultMeta = document.getElementById('resultMeta');
 const openBtn = document.getElementById('openBtn');
-const saveBtn = document.getElementById('saveBtn');
+const copyBtn = document.getElementById('copyBtn');
+const shareBtn = document.getElementById('shareBtn');
+const glow = document.getElementById('glow');
 
 let stream = null;
-let last = '';
+let scanning = false;
+let audioCtx = null;
+let beepGain = null;
 
-async function startCamera(){
+/* prepare canvas */
+const ctx = overlay.getContext('2d');
+
+/* Helper: update status */
+function setStatus(t){ status.innerText = t; }
+
+/* Start camera */
+async function startScan(){
+  if (scanning) return;
   try{
-    stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    video.srcObject = stream;
-    await video.play();
-    startBtn.style.display='none';
-    stopBtn.style.display='inline-block';
-    requestAnimationFrame(tick);
-  }catch(e){
+    setStatus('Requesting camera…');
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    vid.srcObject = stream;
+    await vid.play();
+    // ensure canvas size matches video
+    resizeCanvas();
+    scanning = true;
+    setStatus('Scanning...');
+    resultArea.classList.add('hidden');
+    startLoop();
+  } catch(e){
+    console.error(e);
     alert('Camera access denied or not available.');
+    setStatus('Camera error');
   }
 }
 
-function stopCamera(){
-  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
-  video.pause(); video.srcObject = null;
-  startBtn.style.display='inline-block';
-  stopBtn.style.display='none';
+/* Stop camera */
+function stopScan(){
+  if(stream){
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+  }
+  scanning = false;
+  setStatus('Stopped');
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+  vid.pause();
 }
 
-function tick(){
-  if(!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
-    requestAnimationFrame(tick); return;
-  }
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  ctx.drawImage(video,0,0,canvas.width,canvas.height);
-  const img = ctx.getImageData(0,0,canvas.width,canvas.height);
-  const code = jsQR(img.data, img.width, img.height, {inversionAttempts:'attemptBoth'});
-  if(code){
-    handleResult(code.data);
+/* Resize overlay canvas to video size */
+function resizeCanvas(){
+  const rect = previewWrap.getBoundingClientRect();
+  overlay.width = rect.width;
+  overlay.height = rect.height;
+}
+
+/* Map from video coordinates to canvas coordinates */
+function toCanvasCoords(x, y, videoWidth, videoHeight){
+  // video is object-fit: cover; we need to compute how it fills previewWrap
+  const cw = overlay.width, ch = overlay.height;
+  const ratioV = videoWidth / videoHeight;
+  const ratioC = cw / ch;
+  let sw, sh, sx, sy;
+  if(ratioV > ratioC){
+    // video wider than container -> crop left/right
+    sh = ch;
+    sw = sh * ratioV;
+    sx = (sw - cw) / 2;
+    sy = 0;
   } else {
-    requestAnimationFrame(tick);
+    // video taller -> crop top/bottom
+    sw = cw;
+    sh = sw / ratioV;
+    sx = 0;
+    sy = (sh - ch) / 2;
+  }
+  const scaleX = sw / videoWidth;
+  const scaleY = sh / videoHeight;
+  const cx = (x * scaleX) - sx;
+  const cy = (y * scaleY) - sy;
+  return { x: cx, y: cy };
+}
+
+/* draw polygon */
+function drawPolygon(points, strokeStyle='rgba(25,195,125,0.9)', lineWidth=4){
+  ctx.beginPath();
+  for(let i=0;i<points.length;i++){
+    const p = points[i];
+    if(i===0) ctx.moveTo(p.x, p.y);
+    else ctx.lineTo(p.x, p.y);
+  }
+  ctx.closePath();
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = strokeStyle;
+  ctx.stroke();
+}
+
+/* beep tone */
+function playBeep(){
+  try{
+    if(!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      beepGain = audioCtx.createGain();
+      beepGain.gain.value = 0.0;
+      beepGain.connect(audioCtx.destination);
+    }
+    const o = audioCtx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = 950;
+    o.connect(beepGain);
+    beepGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+    beepGain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + 0.01);
+    o.start();
+    setTimeout(()=>{
+      beepGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.04);
+      setTimeout(()=>{ try{o.stop(); o.disconnect(); }catch(e){} }, 60);
+    }, 80);
+  }catch(e){ /* ignore */ }
+}
+
+/* vibration (smooth) */
+function vibrateSmooth(){
+  if(navigator.vibrate){
+    // smooth bump: small pulses decreasing
+    navigator.vibrate([40,20,30]);
   }
 }
 
-function handleResult(text){
-  last = text;
-  result.style.display='block';
-  resultText.textContent = text;
-  copyBtn.style.display='inline-block';
-  saveBtn.style.display='inline-block';
-  if(text.startsWith('http')) openBtn.style.display='inline-block';
-  else openBtn.style.display='none';
-  // beep & vibrate
-  if(typeof navigator.vibrate === 'function') navigator.vibrate(150);
-  try{ new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg').play(); }catch(e){}
+/* show result UI */
+function showResult(text, polygon){
+  resultText.innerText = text;
+  resultMeta.innerText = 'Detected at ' + (new Date()).toLocaleTimeString();
+  resultArea.classList.remove('hidden');
+  // glow animation
+  glow.classList.remove('hidden');
+  setTimeout(()=>glow.classList.add('hidden'), 900);
+  // actions
+  openBtn.onclick = ()=>{ window.open(text, '_blank'); }
+  copyBtn.onclick = async ()=>{
+    try { await navigator.clipboard.writeText(text); copyBtn.innerText='Copied'; setTimeout(()=>copyBtn.innerText='Copy',900); }
+    catch(e){ alert('Copy failed'); }
+  }
+  shareBtn.onclick = async ()=>{
+    if(navigator.share){
+      try{ await navigator.share({text, url:text}); } catch(e) { /* ignore */ }
+    } else {
+      alert('Share not supported on this browser');
+    }
+  }
 }
 
-startBtn.addEventListener('click', startCamera);
-stopBtn.addEventListener('click', ()=>{ stopCamera(); });
+/* main scanning loop */
+let scanId = null;
+async function startLoop(){
+  cancelAnimationFrame(scanId);
+  resizeCanvas();
+  const videoWidth = vid.videoWidth || vid.clientWidth;
+  const videoHeight = vid.videoHeight || vid.clientHeight;
+  // create internal canvas to capture frame
+  const capture = document.createElement('canvas');
+  capture.width = videoWidth;
+  capture.height = videoHeight;
+  const capCtx = capture.getContext('2d');
 
-fileInput.addEventListener('change', ()=>{
-  const f = fileInput.files[0];
+  async function loop(){
+    if(!scanning || !stream) return;
+    try{
+      // draw current video frame to capture canvas
+      capCtx.drawImage(vid, 0, 0, capture.width, capture.height);
+      const img = capCtx.getImageData(0,0,capture.width,capture.height);
+      const code = jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' });
+
+      // clear overlay
+      ctx.clearRect(0,0,overlay.width,overlay.height);
+
+      if(code){
+        // map corners to overlay coords and draw polygon
+        const corners = ['topLeftCorner','topRightCorner','bottomRightCorner','bottomLeftCorner'];
+        const pts = corners.map(k=>{
+          const v = code.location[k];
+          const p = toCanvasCoords(v.x, v.y, capture.width, capture.height);
+          return { x: p.x, y: p.y };
+        });
+
+        drawPolygon(pts);
+        // small cross in center
+        const center = { x: (pts[0].x+pts[2].x)/2, y: (pts[0].y+pts[2].y)/2 };
+        ctx.beginPath(); ctx.arc(center.x, center.y, 6, 0, Math.PI*2); ctx.fillStyle = 'rgba(25,195,125,0.95)'; ctx.fill();
+
+        // beep + vibrate + show result
+        playBeep();
+        vibrateSmooth();
+        showResult(code.data, pts);
+
+        // stop the camera after detection (if you want continuous scanning, remove stopScan)
+        stopScan();
+        return;
+      }
+
+      // draw nice soft border of frame area (indicate scanning focus)
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 2;
+      const fw = overlay.width * 0.74;
+      const fh = overlay.height * 0.62;
+      const fx = (overlay.width - fw)/2;
+      const fy = (overlay.height - fh)/2;
+      ctx.strokeRect(fx, fy, fw, fh);
+
+    }catch(e){
+      console.error('scan loop error', e);
+    }
+    scanId = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* Upload image scanning */
+uploadInput.addEventListener('change', e=>{
+  const f = e.target.files && e.target.files[0];
   if(!f) return;
   const img = new Image();
   img.onload = ()=>{
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    ctx.drawImage(img,0,0);
-    const data = ctx.getImageData(0,0,canvas.width,canvas.height);
-    const code = jsQR(data.data, data.width, data.height, {inversionAttempts:'attemptBoth'});
-    if(code) handleResult(code.data);
-    else { result.style.display='block'; resultText.textContent = 'No QR found in image.'; copyBtn.style.display='none'; saveBtn.style.display='none'; openBtn.style.display='none'; }
+    const c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    const cctx = c.getContext('2d');
+    cctx.drawImage(img,0,0);
+    const id = cctx.getImageData(0,0,c.width,c.height);
+    const code = jsQR(id.data, id.width, id.height);
+    if(code){
+      playBeep(); vibrateSmooth();
+      showResult(code.data);
+    } else {
+      alert('No QR found in image');
+    }
   };
   img.src = URL.createObjectURL(f);
 });
 
-copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(last); copyBtn.textContent='Copied ✓'; setTimeout(()=>copyBtn.textContent='Copy',1000); });
-openBtn.addEventListener('click', ()=>{ if(last.startsWith('http')) window.open(last,'_blank'); });
-saveBtn.addEventListener('click', ()=>{
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([last],{type:'text/plain'}));
-  a.download = 'qr-result.txt';
-  a.click();
-});
+/* UI bindings */
+startBtn.addEventListener('click', startScan);
+stopBtn.addEventListener('click', stopScan);
+uploadBtn.addEventListener('click', ()=>uploadInput.click());
+
+/* resize handling */
+window.addEventListener('resize', ()=>{ if(scanning) resizeCanvas(); });
+
+/* Clean up on unload */
+window.addEventListener('pagehide', ()=>stopScan());
+window.addEventListener('beforeunload', ()=>stopScan());
+
 </script>
 </body>
 </html>
-
