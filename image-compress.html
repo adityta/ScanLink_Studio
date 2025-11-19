@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,56 +11,192 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Image Compress</title>
-<style>
-body{font-family:Poppins;background:#f4f7fb;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
-input,button,select{padding:10px;border-radius:10px;width:100%;margin-top:10px}
-img{max-width:100%;margin-top:10px;border-radius:10px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Image Compressor — ScanLink Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
+    header{background:linear-gradient(90deg,#0f47d3,#7c3aed);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+    .title{font-size:16px;font-weight:700}
+    nav a{color:white;text-decoration:none;margin-left:12px;font-weight:600}
+    main{max-width:900px;margin:28px auto;padding:16px}
+    .box{background:var(--card);padding:20px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    h2{margin:0 0 8px;color:var(--primary)}
+    p.lead{margin:0 0 16px;color:var(--muted);font-size:14px}
+    .controls{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:center}
+    @media (max-width:640px){ .controls{grid-template-columns:1fr} }
+    input[type="file"]{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:transparent}
+    select, button, .btn{padding:10px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:600;cursor:pointer}
+    .muted{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted);font-weight:600}
+    .previewWrap{margin-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start}
+    img#preview{max-width:320px;border-radius:8px;box-shadow:0 6px 18px rgba(2,6,23,0.06)}
+    .info{flex:1;min-width:220px}
+    .meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .small{font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:#fafafa}
+    footer{background:#0f47d3;color:#fff;text-align:center;padding:14px 12px;margin-top:30px}
+  </style>
 </head>
 <body>
 
-<div class="box">
-<h2>Image Compressor</h2>
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.85)">All-in-one client-side tools</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
 
-<input type="file" id="file">
-<select id="quality">
-  <option value="1">100% Quality</option>
-  <option value="0.8">80%</option>
-  <option value="0.6">60%</option>
-  <option value="0.4">40%</option>
-  <option value="0.2">20%</option>
-</select>
+<main>
+  <div class="box" aria-labelledby="toolTitle">
+    <h2 id="toolTitle">Image Compressor</h2>
+    <p class="lead">Upload an image, choose quality and press <strong>Compress</strong>. Then download the compressed result.</p>
 
-<button id="go">Compress</button>
+    <div class="controls">
+      <input id="file" type="file" accept="image/*" aria-label="Choose image">
+      <select id="quality" title="Quality">
+        <option value="1">100% Quality</option>
+        <option value="0.9">90%</option>
+        <option value="0.8" selected>80%</option>
+        <option value="0.7">70%</option>
+        <option value="0.6">60%</option>
+        <option value="0.5">50%</option>
+        <option value="0.4">40%</option>
+        <option value="0.2">20%</option>
+      </select>
+    </div>
 
-<img id="preview">
-</div>
+    <div style="margin-top:12px" class="row">
+      <button id="go">Compress</button>
+      <button id="download" class="muted" disabled>Download</button>
+      <button id="reset" class="muted">Reset</button>
+    </div>
+
+    <div class="previewWrap">
+      <div class="info">
+        <div class="meta" id="meta">No image selected</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="small" id="origSize">Original: —</span>
+          <span class="small" id="newSize">Compressed: —</span>
+          <span class="small" id="dimensions">Dimensions: —</span>
+        </div>
+      </div>
+
+      <div>
+        <img id="preview" alt="Preview (compressed will appear here)">
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2025 ScanLink Studio · <a href="about.html" style="color:#fff">About</a> · <a href="privacy.html" style="color:#fff">Privacy</a>
+</footer>
 
 <script>
-file.onchange=e=>{
-  const f=e.target.files[0];
-  if(!f) return;
-  preview.src=URL.createObjectURL(f);
-};
+  const fileEl = document.getElementById('file');
+  const preview = document.getElementById('preview');
+  const quality = document.getElementById('quality');
+  const go = document.getElementById('go');
+  const downloadBtn = document.getElementById('download');
+  const resetBtn = document.getElementById('reset');
+  const meta = document.getElementById('meta');
+  const origSizeEl = document.getElementById('origSize');
+  const newSizeEl = document.getElementById('newSize');
+  const dimEl = document.getElementById('dimensions');
 
-go.onclick=()=>{
-  if(!file.files[0]) return alert("Select image!");
-  const img=new Image();
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    const ctx=c.getContext("2d");
-    c.width=img.width;
-    c.height=img.height;
-    ctx.drawImage(img,0,0);
-    preview.src=c.toDataURL("image/jpeg",parseFloat(quality.value));
-  };
-  img.src=URL.createObjectURL(file.files[0]);
-};
+  let originalFile = null;
+  let lastDataUrl = null;
+  let lastName = 'compressed.jpg';
+
+  fileEl.addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(!f) return clearAll();
+    originalFile = f;
+    lastName = (f.name ? f.name.replace(/\.[^/.]+$/,'') + '-compressed.jpg' : 'compressed.jpg');
+    preview.src = URL.createObjectURL(f);
+    preview.onload = () => {
+      dimEl.textContent = `Dimensions: ${preview.naturalWidth}×${preview.naturalHeight}px`;
+      origSizeEl.textContent = `Original: ${(f.size/1024).toFixed(1)} KB`;
+      meta.textContent = `Selected: ${f.name}`;
+      URL.revokeObjectURL(preview.src);
+    };
+    downloadBtn.disabled = true;
+    newSizeEl.textContent = 'Compressed: —';
+  });
+
+  go.addEventListener('click', async ()=>{
+    if(!originalFile) return alert('Select an image first!');
+    const img = new Image();
+    img.onload = () => {
+      // Use same size, compress by quality
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img,0,0);
+      const q = parseFloat(quality.value);
+      // create dataURL (JPEG)
+      const dataUrl = canvas.toDataURL('image/jpeg', q);
+      preview.src = dataUrl;
+      lastDataUrl = dataUrl;
+      lastName = (originalFile.name ? originalFile.name.replace(/\.[^/.]+$/,'') + `-q${Math.round(q*100)}.jpg` : lastName);
+      // estimate size
+      const byteString = atob(dataUrl.split(',')[1]);
+      const size = byteString.length;
+      newSizeEl.textContent = `Compressed: ${(size/1024).toFixed(1)} KB`;
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = 'Download';
+    };
+    // read original file as data URL to load into image (preserves orientation-ish)
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(originalFile);
+  });
+
+  // Download handler
+  downloadBtn.addEventListener('click', ()=>{
+    if(!lastDataUrl) return;
+    const a = document.createElement('a');
+    a.href = lastDataUrl;
+    a.download = lastName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  resetBtn.addEventListener('click', clearAll);
+
+  function clearAll(){
+    fileEl.value = '';
+    preview.src = '';
+    originalFile = null;
+    lastDataUrl = null;
+    meta.textContent = 'No image selected';
+    origSizeEl.textContent = 'Original: —';
+    newSizeEl.textContent = 'Compressed: —';
+    dimEl.textContent = 'Dimensions: —';
+    downloadBtn.disabled = true;
+  }
+
+  // Allow keyboard: Enter triggers compress when file chosen
+  fileEl.addEventListener('keydown', (e)=>{ if(e.key==='Enter') go.click(); });
 </script>
 
 </body>
 </html>
-
