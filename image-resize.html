@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,41 +11,203 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Image Resize</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Image Resizer — ScanLink Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Poppins;background:#eef3ff;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
-input,button{padding:10px;border-radius:10px;width:100%;margin-top:10px}
-img{max-width:100%;border-radius:10px;margin-top:10px}
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+    --glass: rgba(15,71,211,0.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111}
+  header{background:linear-gradient(90deg,#0f47d3,#7c3aed);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+  .title{font-size:16px;font-weight:700}
+  nav a{color:white;text-decoration:none;margin-left:12px;font-weight:600}
+  main{max-width:980px;margin:26px auto;padding:18px}
+  .card{background:var(--card);padding:18px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+  h2{color:var(--primary);margin:0 0 10px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
+  input[type="file"]{padding:10px}
+  input,select,button{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.08);font-size:14px}
+  .controls{max-width:420px}
+  label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+  #out{max-width:100%;border-radius:10px;margin-top:14px;background:#f8fafc}
+  .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .btn{background:linear-gradient(90deg,#00d2ff,#9b5cff);color:#021024;border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+  .btn.secondary{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted);font-weight:600}
+  footer{background:#0f47d3;color:#fff;text-align:center;padding:14px 12px;margin-top:28px;border-radius:8px}
+  @media (max-width:700px){
+    .row{flex-direction:column}
+  }
 </style>
 </head>
 <body>
-<div class="box">
-<h2>Image Resize</h2>
-<input type="file" id="file">
-<input id="w" placeholder="Width px">
-<input id="h" placeholder="Height px">
-<button id="go">Resize</button>
-<img id="out">
-</div>
+
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.85)">Image Tools — Resizer</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="image-resize.html">Image Resizer</a>
+    <a href="image-compress.html">Compressor</a>
+    <a href="watermark-tool.html">Watermark</a>
+  </nav>
+</header>
+
+<main>
+  <div class="card">
+    <h2>Image Resizer</h2>
+    <p style="margin:6px 0 0;color:var(--muted)">Resize images client-side. Set width/height in px or scale by percent. Then download the result.</p>
+
+    <div class="row" style="margin-top:14px">
+      <div style="flex:1 1 320px">
+        <input type="file" id="file" accept="image/*">
+        <div class="controls">
+          <label for="mode">Resize mode</label>
+          <select id="mode">
+            <option value="px">Width &amp; Height (px)</option>
+            <option value="percent">Scale (%)</option>
+          </select>
+
+          <div id="pxInputs">
+            <label>Width (px)</label>
+            <input id="w" type="number" placeholder="e.g. 800">
+            <label>Height (px)</label>
+            <input id="h" type="number" placeholder="e.g. 600">
+          </div>
+
+          <div id="pctInputs" style="display:none">
+            <label>Scale (%)</label>
+            <input id="pct" type="number" placeholder="e.g. 50">
+            <small style="color:var(--muted)">Enter 100 to keep same size, 50 to reduce by half.</small>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="go" class="btn">Resize</button>
+          <a id="downloadLink" class="btn secondary" style="display:none" download="resized-image.png">Download PNG</a>
+          <button id="reset" class="btn secondary">Reset</button>
+        </div>
+
+        <div style="margin-top:10px;color:var(--muted);font-size:13px">
+          Tip: For better quality, provide final target dimensions close to the original aspect ratio.
+        </div>
+      </div>
+
+      <div style="flex:1 1 320px">
+        <div style="background:var(--glass);padding:12px;border-radius:10px">
+          <div style="font-size:13px;color:var(--muted)">Preview</div>
+          <img id="out" alt="Resized preview will appear here">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="max-width:980px;margin:18px auto 0">
+    © 2025 ScanLink Studio · <a href="about.html" style="color:#fff;text-decoration:underline">About</a> · <a href="privacy.html" style="color:#fff;text-decoration:underline">Privacy</a>
+  </footer>
+</main>
 
 <script>
-go.onclick=()=>{
-  const f=file.files[0]; if(!f) return alert("Select image");
-  const iw=parseInt(w.value), ih=parseInt(h.value);
-  if(!iw||!ih) return alert("Enter width+height");
-  const img=new Image();
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    const ctx=c.getContext("2d");
-    c.width=iw; c.height=ih;
-    ctx.drawImage(img,0,0,iw,ih);
-    out.src=c.toDataURL();
+  const fileEl = document.getElementById('file');
+  const wEl = document.getElementById('w');
+  const hEl = document.getElementById('h');
+  const pctEl = document.getElementById('pct');
+  const go = document.getElementById('go');
+  const out = document.getElementById('out');
+  const downloadLink = document.getElementById('downloadLink');
+  const mode = document.getElementById('mode');
+  const pxInputs = document.getElementById('pxInputs');
+  const pctInputs = document.getElementById('pctInputs');
+  const resetBtn = document.getElementById('reset');
+
+  mode.addEventListener('change', ()=>{
+    if(mode.value === 'percent'){ pxInputs.style.display='none'; pctInputs.style.display='block'; }
+    else { pxInputs.style.display='block'; pctInputs.style.display='none'; }
+  });
+
+  resetBtn.onclick = ()=>{
+    fileEl.value = '';
+    wEl.value = '';
+    hEl.value = '';
+    pctEl.value = '';
+    out.src = '';
+    downloadLink.style.display = 'none';
   };
-  img.src=URL.createObjectURL(f);
-};
+
+  function makeFilename(originalName){
+    if(!originalName) return 'resized-image.png';
+    const base = originalName.replace(/\.[^/.]+$/, "");
+    return base + "-resized.png";
+  }
+
+  go.onclick = async () => {
+    const f = fileEl.files[0];
+    if(!f) return alert("Select an image file first");
+    const img = new Image();
+    img.onload = () => {
+      let targetW, targetH;
+      if(mode.value === 'percent'){
+        const pct = parseFloat(pctEl.value);
+        if(!pct || pct <= 0) return alert("Enter a valid percent (>0)");
+        targetW = Math.round(img.width * (pct/100));
+        targetH = Math.round(img.height * (pct/100));
+      } else {
+        targetW = parseInt(wEl.value);
+        targetH = parseInt(hEl.value);
+        if(!targetW || !targetH) return alert("Enter width and height in pixels");
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext('2d');
+
+      // preserve aspect if one dimension is missing (optional)
+      if(!targetW || !targetH){
+        const ratio = img.width / img.height;
+        if(targetW && !targetH) targetH = Math.round(targetW / ratio);
+        if(targetH && !targetW) targetW = Math.round(targetH * ratio);
+        canvas.width = targetW; canvas.height = targetH;
+      }
+
+      // draw with smoothing
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+
+      // show preview and prepare download link (PNG)
+      const dataUrl = canvas.toDataURL('image/png');
+      out.src = dataUrl;
+      downloadLink.href = dataUrl;
+      downloadLink.download = makeFilename(f.name);
+      downloadLink.style.display = 'inline-block';
+      // also provide JPEG option via context menu: create alternate link on right-click
+    };
+    img.onerror = ()=> alert("Could not load the image (maybe corrupted)");
+    img.src = URL.createObjectURL(f);
+  };
+
+  // allow drag-and-drop on image preview area (optional UX)
+  out.addEventListener('dragover', e => e.preventDefault());
+  out.addEventListener('drop', e => {
+    e.preventDefault();
+    const dt = e.dataTransfer;
+    if(dt && dt.files && dt.files[0]){
+      fileEl.files = dt.files;
+      // auto-run
+    }
+  });
 </script>
+
 </body>
 </html>
-
