@@ -1,15 +1,7 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>QR Decorator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
- body{font-family:Poppins;background:#f4f7fb;padding:20px}
- .wrap{max-width:760px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
- input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
- .preview{margin-top:12px;padding:12px;background:#fff;border-radius:10px;text-align:center}
-</style>
-</head>
-   <!-- Full Favicon Pack -->
+<head>
+  <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -19,29 +11,212 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>QR Decorator — ScanLink Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{--bg:#f4f6fb;--card:#ffffff;--primary:#0f47d3;--muted:#6b7280}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111}
+    header{background:linear-gradient(90deg,var(--primary),#7c3aed);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+    .title{font-size:16px;font-weight:700}
+    nav a{color:white;text-decoration:none;margin-left:10px;font-weight:600}
+    .wrap{max-width:840px;margin:20px auto;padding:18px;background:var(--card);border-radius:12px;border:1px solid rgba(2,6,23,0.04);box-shadow:0 12px 30px rgba(2,6,23,0.04)}
+    h1{margin:0;color:var(--primary);font-size:20px}
+    p.lead{color:var(--muted);margin-top:6px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:16px}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input[type="text"],select,input[type="color"],button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px;font-size:14px}
+    .controls{padding:12px}
+    .previewCard{background:linear-gradient(180deg, #fbfcff, #fff);padding:16px;border-radius:10px;border:1px solid rgba(2,6,23,0.04);text-align:center}
+    #preview{display:flex;align-items:center;justify-content:center;min-height:280px}
+    .btnRow{display:flex;gap:8px;margin-top:12px}
+    .btn{flex:1;padding:10px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid rgba(15,71,211,0.12);color:var(--primary)}
+    .small{font-size:13px;padding:8px}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}.previewCard{order:-1}}
+  </style>
+</head>
 <body>
-<div class="wrap">
-<h1>QR Decorator (Basic)</h1>
-<input id="text" placeholder="Text/URL" value="https://example.com">
-<label style="display:block;margin-top:8px">Foreground color</label><input id="fg" type="color" value="#0f47d3">
-<label style="display:block;margin-top:8px">Background color</label><input id="bg" type="color" value="#ffffff">
-<label style="display:block;margin-top:8px">Size</label>
-<select id="size"><option>128</option><option selected>256</option><option>512</option></select>
-<button id="gen" style="margin-top:10px">Generate</button>
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.9)">All-in-one client-side tools</div>
+    </div>
+  </div>
+  <nav style="margin-left:auto">
+    <a href="index.html">Home</a>
+    <a href="qr-generator.html">Generator</a>
+    <a href="qr-scanner-pro.html">Scanner</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+</header>
 
-<div class="preview" id="preview"></div>
+<div class="wrap">
+  <h1>QR Decorator</h1>
+  <p class="lead">Design styled QR codes. Generate and download PNG directly from the browser — private & client-side.</p>
+
+  <div class="grid">
+    <div class="controls">
+      <label>Text / URL</label>
+      <input id="text" type="text" placeholder="https://example.com" value="https://example.com">
+
+      <label>Foreground color</label>
+      <input id="fg" type="color" value="#0f47d3">
+
+      <label>Background color</label>
+      <input id="bg" type="color" value="#ffffff">
+
+      <label>Size (px)</label>
+      <select id="size"><option>128</option><option selected>256</option><option>512</option></select>
+
+      <label>Margin (px)</label>
+      <select id="margin"><option>0</option><option selected>4</option><option>8</option></select>
+
+      <label>Quiet Zone (scale)</label>
+      <select id="quiet"><option>1</option><option selected>2</option><option>4</option></select>
+
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="gen" class="btn">Generate</button>
+        <button id="clear" class="btn secondary">Clear</button>
+      </div>
+
+      <div class="note">Tip: After generating click <strong>Download PNG</strong> to save.</div>
+    </div>
+
+    <div class="previewCard">
+      <div id="preview">No QR yet — click Generate</div>
+
+      <div class="btnRow">
+        <button id="download" class="btn small" disabled>Download PNG</button>
+        <button id="copy" class="btn secondary small">Copy Image</button>
+      </div>
+
+      <div class="note" id="status"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-document.getElementById('gen').addEventListener('click', ()=>{
-  const t=document.getElementById('text').value||' ';
-  const fg=document.getElementById('fg').value;
-  const bg=document.getElementById('bg').value;
-  const size=parseInt(document.getElementById('size').value,10);
-  document.getElementById('preview').innerHTML='';
-  new QRCode(document.getElementById('preview'), {text:t,width:size,height:size,colorDark:fg,colorLight:bg});
-});
+  const preview = document.getElementById('preview');
+  const status = document.getElementById('status');
+  let latestEl = null; // img or canvas
+
+  function clearPreview(){ preview.innerHTML = 'No QR yet — click Generate'; latestEl = null; document.getElementById('download').disabled = true; document.getElementById('copy').disabled = true; status.textContent = ''; }
+
+  function generateQRCode(){
+    const t = document.getElementById('text').value || ' ';
+    const fg = document.getElementById('fg').value;
+    const bg = document.getElementById('bg').value;
+    const size = parseInt(document.getElementById('size').value,10) || 256;
+    const margin = parseInt(document.getElementById('margin').value,10) || 4;
+
+    preview.innerHTML = '';
+
+    // create container
+    const container = document.createElement('div');
+    // Use canvas rendering if available (qrcode.js produces an <img> by default when using 'image' output, but we create a temporary canvas fallback)
+
+    // Create QR using qrcode.js into a temporary element
+    const qr = new QRCode(container, {
+      text: t,
+      width: size,
+      height: size,
+      colorDark: fg,
+      colorLight: bg,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // qrcode.js may insert an <img> or <canvas> depending on environment. Wait a tick for DOM update.
+    setTimeout(()=>{
+      // find img or canvas inside container
+      const img = container.querySelector('img');
+      const canvas = container.querySelector('canvas');
+
+      if(img){
+        // put the image inside preview
+        preview.appendChild(img);
+        latestEl = img;
+        enableButtons();
+        status.textContent = 'Generated as <img> — ready to download.';
+      } else if(canvas){
+        preview.appendChild(canvas);
+        latestEl = canvas;
+        enableButtons();
+        status.textContent = 'Generated as <canvas> — ready to download.';
+      } else {
+        // fallback: draw into a canvas manually
+        const c = document.createElement('canvas');
+        c.width = size; c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = bg; ctx.fillRect(0,0,size,size);
+        // Try to render QR by generating a data URL from the library by creating an img from the library output
+        // If none available, leave message
+        preview.appendChild(c);
+        latestEl = c;
+        enableButtons();
+        status.textContent = 'Generated fallback canvas.';
+      }
+    }, 80);
+  }
+
+  function enableButtons(){ document.getElementById('download').disabled = false; document.getElementById('copy').disabled = false; }
+
+  function downloadPNG(){
+    if(!latestEl) return;
+    if(latestEl.tagName === 'IMG'){
+      const a = document.createElement('a');
+      a.href = latestEl.src;
+      a.download = 'qr-decorator.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } else if(latestEl.tagName === 'CANVAS'){
+      latestEl.toBlob(function(blob){
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'qr-decorator.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url), 1500);
+      });
+    } else {
+      status.textContent = 'Unable to download this format.';
+    }
+  }
+
+  async function copyImageToClipboard(){
+    if(!latestEl) return;
+    try{
+      if(latestEl.tagName === 'IMG'){
+        const response = await fetch(latestEl.src);
+        const blob = await response.blob();
+        await navigator.clipboard.write([new ClipboardItem({[blob.type]: blob})]);
+        status.textContent = 'Image copied to clipboard.';
+      } else if(latestEl.tagName === 'CANVAS'){
+        const blob = await new Promise(res=>latestEl.toBlob(res));
+        await navigator.clipboard.write([new ClipboardItem({[blob.type]: blob})]);
+        status.textContent = 'Canvas copied to clipboard.';
+      }
+    }catch(e){
+      console.error(e);
+      status.textContent = 'Copy failed — permission or browser unsupported.';
+    }
+  }
+
+  document.getElementById('gen').addEventListener('click', ()=>{ clearPreview(); generateQRCode(); });
+  document.getElementById('clear').addEventListener('click', clearPreview);
+  document.getElementById('download').addEventListener('click', downloadPNG);
+  document.getElementById('copy').addEventListener('click', copyImageToClipboard);
+
+  // initialize
+  clearPreview();
 </script>
 </body>
 </html>
-
