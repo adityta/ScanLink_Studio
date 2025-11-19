@@ -1,35 +1,380 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>WiFi QR Generator</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
- body{font-family:Poppins;background:#f4f7fb;padding:20px}
- .wrap{max-width:640px;margin:12px auto;background:#fff;padding:16px;border-radius:12px}
- input,select,button{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;margin-top:8px}
-</style></head>
-<body>
-<div class="wrap">
-<h1>WiFi QR Generator</h1>
-<input id="ssid" placeholder="SSID (network name)">
-<select id="enc"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">None</option></select>
-<input id="pwd" placeholder="Password (leave blank if none)">
-<label style="font-size:13px;margin-top:8px;display:block"><input type="checkbox" id="hidden"> Hidden network</label>
-<button id="gen">Generate</button>
-<div id="out" style="margin-top:12px"></div>
-</div>
+<head>
+  <!-- Full Favicon Pack -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
-<script>
-document.getElementById('gen').addEventListener('click', ()=>{
-  const ssid = document.getElementById('ssid').value;
-  const enc = document.getElementById('enc').value;
-  const pwd = document.getElementById('pwd').value;
-  const hidden = document.getElementById('hidden').checked ? 'true' : 'false';
-  if(!ssid) return alert('Enter SSID');
-  // WiFi QR format: WIFI:T:WPA;S:SSID;P:password;H:true;;
-  const data = `WIFI:T:${enc};S:${ssid};P:${pwd};H:${hidden};;`;
-  document.getElementById('out').innerHTML='';
-  new QRCode(document.getElementById('out'), {text:data, width:220, height:220, colorDark:'#0f47d3', colorLight:'#fff'});
-});
-</script>
+  <script src="seo-auto.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ScanLink Studio — WiFi QR Generator</title>
+
+  <!-- Fonts & QR lib -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+
+  <meta name="description" content="WiFi QR Generator — create QR codes for SSID/password (WPA/WEP/Open). Part of ScanLink Studio tools." />
+
+  <style>
+    :root{
+      --bg:#f3f7ff;
+      --card:#ffffff;
+      --accent:#0f47d3;
+      --accent-2:#2763ff;
+      --muted:#6b7280;
+      --glass: rgba(255,255,255,0.6);
+      --radius:14px;
+      --shadow: 0 6px 20px rgba(12,36,100,0.06);
+      --glass-2: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(246,249,255,0.8));
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(39,99,255,0.06), transparent 8%),
+                  radial-gradient(1000px 500px at 90% 90%, rgba(15,71,211,0.04), transparent 8%),
+                  var(--bg);
+      color:#0b1220;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:28px;
+    }
+
+    /* Top bar / header like homepage */
+    header{
+      max-width:1100px;
+      margin:0 auto 22px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:inherit;
+    }
+    .logo{
+      width:46px;height:46px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;align-items:center;justify-content:center;
+      color:white;font-weight:700;font-size:18px;box-shadow:0 6px 18px rgba(15,71,211,0.18);
+    }
+    .site-title{font-size:18px;font-weight:600;line-height:1}
+    .site-sub{font-size:12px;color:var(--muted);margin-top:3px}
+
+    nav.tools{
+      margin-left:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    nav.tools a{
+      text-decoration:none;
+      padding:8px 12px;border-radius:10px;
+      font-size:13px;color:var(--accent);
+      background:transparent;border:1px solid rgba(15,71,211,0.06);
+      transition:all .18s ease;
+    }
+    nav.tools a:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+
+    /* page container */
+    .container{
+      max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:22px;
+    }
+
+    /* main card (tool) */
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card h1{margin:0 0 6px;font-size:20px}
+    .card p{margin:0 0 14px;color:var(--muted);font-size:14px}
+
+    /* form */
+    label{display:block;margin-top:10px;font-weight:600;font-size:13px;color:#24324a}
+    input[type="text"], select, input[type="password"]{
+      width:100%;padding:12px;border-radius:10px;border:1px solid #e6eef6;margin-top:8px;
+      font-size:14px;background:transparent;
+    }
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+
+    .actions{display:flex;gap:10px;margin-top:14px;align-items:center}
+    .btn{
+      cursor:pointer;border:0;padding:11px 14px;border-radius:10px;font-weight:600;
+      transition:transform .12s ease, box-shadow .12s ease;
+      box-shadow: 0 6px 18px rgba(15,71,211,0.08);
+    }
+    .btn:active{transform:scale(.992)}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .btn-outline{background:transparent;border:1px solid rgba(15,71,211,0.08);color:var(--accent)}
+
+    .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+    /* preview area */
+    .preview{
+      margin-top:16px;display:flex;gap:12px;align-items:center;
+    }
+    #qr{width:220px;height:220px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff,#fbfdff);border:1px dashed rgba(15,71,211,0.04)}
+    .meta{
+      flex:1;padding:12px;border-radius:10px;background:var(--glass-2);backdrop-filter: blur(6px);
+      font-size:14px;color:#123;
+    }
+
+    /* right column: tips + download history */
+    .side{
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .hint{
+      padding:14px;background:linear-gradient(180deg,#fff,#fcfeff);border-radius:12px;border:1px solid rgba(5,20,80,0.03);
+      font-size:13px;color:var(--muted)
+    }
+
+    .small{font-size:12px;color:var(--muted)}
+
+    /* subtle hover for buttons */
+    .btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 12px 30px rgba(15,71,211,0.12)}
+
+    /* responsive */
+    @media (max-width:980px){
+      .container{grid-template-columns:1fr; padding-bottom:80px}
+      nav.tools{display:none}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header (homepage style) -->
+  <header>
+    <a class="brand" href="index.html" title="Go to ScanLink Studio home">
+      <div class="logo">SL</div>
+      <div>
+        <div class="site-title">ScanLink Studio</div>
+        <div class="site-sub">Tools — QR • Convert • Scanner</div>
+      </div>
+    </a>
+
+    <!-- quick links to other tools (linked as requested) -->
+    <nav class="tools" aria-label="Other tools">
+      <a href="index.html">Home</a>
+      <a href="jpg-to-png.html">JPG → PNG</a>
+      <a href="png-to-jpg.html">PNG → JPG</a>
+      <a href="scanner-pro.html">Scanner Pro</a>
+      <a href="qr-generator.html">QR Generator</a>
+      <a href="wifi.html" style="background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white">WiFi QR</a>
+    </nav>
+  </header>
+
+  <main class="container" role="main">
+    <!-- Left: the tool -->
+    <section class="card" aria-labelledby="title-wifi">
+      <h1 id="title-wifi">WiFi QR Generator</h1>
+      <p>Create a WiFi QR code that others can scan to join your network (WPA/WEP/Open). Works offline in-browser.</p>
+
+      <label for="ssid">Network name (SSID)</label>
+      <input id="ssid" type="text" placeholder="e.g. MyHomeWiFi">
+
+      <div class="row">
+        <div class="col">
+          <label for="enc">Encryption</label>
+          <select id="enc">
+            <option value="WPA">WPA / WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="">None (Open)</option>
+          </select>
+        </div>
+
+        <div class="col">
+          <label for="hidden">Hidden SSID</label>
+          <select id="hidden">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </div>
+      </div>
+
+      <label for="pwd">Password (leave blank for open)</label>
+      <input id="pwd" type="password" placeholder="WiFi password">
+
+      <div class="actions">
+        <button id="gen" class="btn btn-primary" title="Generate QR">Generate QR</button>
+        <button id="download" class="btn btn-outline" disabled title="Download PNG">Download PNG</button>
+        <button id="copy" class="btn btn-outline" title="Copy payload" disabled>Copy Payload</button>
+      </div>
+
+      <div class="preview" aria-live="polite">
+        <div id="qr" aria-hidden="true">
+          <!-- QR canvas goes here -->
+          <div class="small">No QR generated yet</div>
+        </div>
+
+        <div class="meta" id="meta">
+          <div><strong>SSID:</strong> <span id="m-ssid">—</span></div>
+          <div style="margin-top:8px"><strong>Encryption:</strong> <span id="m-enc">—</span></div>
+          <div style="margin-top:8px"><strong>Hidden:</strong> <span id="m-hidden">—</span></div>
+          <div style="margin-top:12px" class="small">Tip: Scanning this QR from a phone will prompt to join the network.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: tips / history -->
+    <aside class="side">
+      <div class="card hint">
+        <strong>How to use</strong>
+        <ol style="margin:8px 0 0;padding-left:18px">
+          <li>Enter SSID (network name).</li>
+          <li>Choose encryption and add password if required.</li>
+          <li>Click <em>Generate QR</em>, then scan or download.</li>
+        </ol>
+      </div>
+
+      <div class="card hint">
+        <strong>Quick actions</strong>
+        <p class="small" style="margin:8px 0 0">You can keep generating multiple QR codes. Use the Download button to save as PNG.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    // Basic WiFi QR tool logic (keeps previous functionality, improved UX & metadata)
+    (function(){
+      const genBtn = document.getElementById('gen');
+      const dBtn = document.getElementById('download');
+      const copyBtn = document.getElementById('copy');
+      const ssidEl = document.getElementById('ssid');
+      const encEl = document.getElementById('enc');
+      const pwdEl = document.getElementById('pwd');
+      const hiddenEl = document.getElementById('hidden');
+      const qrWrap = document.getElementById('qr');
+      const mSsid = document.getElementById('m-ssid');
+      const mEnc = document.getElementById('m-enc');
+      const mHidden = document.getElementById('m-hidden');
+
+      let lastCanvas = null;
+      // escape semicolons/backslashes per WiFi QR spec
+      function esc(s){ return s.replace(/([\\;,:"])/g, '\\$1'); }
+
+      function buildPayload(ssid, enc, pwd, hidden){
+        // Format: WIFI:T:WPA;S:mynetwork;P:mypass;H:true;;
+        let payload = `WIFI:T:${enc || ''};S:${esc(ssid)};`;
+        if(pwd) payload += `P:${esc(pwd)};`;
+        if(hidden) payload += `H:true;`;
+        payload += ';';
+        return payload;
+      }
+
+      genBtn.addEventListener('click', async ()=>{
+        const ssid = (ssidEl.value||'').trim();
+        const enc = encEl.value;
+        const pwd = pwdEl.value || '';
+        const hidden = hiddenEl.value === 'true';
+
+        if(!ssid){
+          ssidEl.focus();
+          alert('Please enter the network SSID (name).');
+          return;
+        }
+
+        const payload = buildPayload(ssid, enc, pwd, hidden);
+
+        // update metadata panel
+        mSsid.textContent = ssid;
+        mEnc.textContent = enc || 'Open';
+        mHidden.textContent = hidden ? 'Yes' : 'No';
+
+        // create canvas and render QR
+        const canvas = document.createElement('canvas');
+        try{
+          // Larger size for better download
+          await QRCode.toCanvas(canvas, payload, { width:720, margin:2, errorCorrectionLevel: 'H' });
+        }catch(e){
+          console.error(e);
+          alert('Failed to generate QR. Try again.');
+          return;
+        }
+
+        // show scaled-down preview for UI
+        qrWrap.innerHTML = '';
+        canvas.style.width = '220px';
+        canvas.style.height = '220px';
+        canvas.style.borderRadius = '8px';
+        qrWrap.appendChild(canvas);
+
+        lastCanvas = canvas;
+        dBtn.disabled = false;
+        copyBtn.disabled = false;
+
+        // smooth pulse highlight on new QR
+        canvas.animate([
+          { boxShadow: '0 0 0px rgba(39,99,255,0.0)' },
+          { boxShadow: '0 18px 45px rgba(39,99,255,0.09)' }
+        ],{ duration:700, easing:'ease-out' });
+      });
+
+      dBtn.addEventListener('click', ()=>{
+        if(!lastCanvas) return;
+        // create a temporary link to download full-size PNG (from the current canvas)
+        const a = document.createElement('a');
+        a.href = lastCanvas.toDataURL('image/png');
+        a.download = `wifi-qr-${Date.now()}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      });
+
+      copyBtn.addEventListener('click', async ()=>{
+        if(!lastCanvas) return;
+        // copy the WiFi payload text to clipboard
+        const ssid = (ssidEl.value||'').trim();
+        const payload = buildPayload(ssid, encEl.value, pwdEl.value, hiddenEl.value === 'true');
+        try{
+          await navigator.clipboard.writeText(payload);
+          copyBtn.textContent = 'Copied!';
+          setTimeout(()=> copyBtn.textContent = 'Copy Payload', 1200);
+        }catch(e){
+          alert('Unable to copy to clipboard. Your browser may block clipboard access.');
+        }
+      });
+
+      // small UX: press Enter on password field to generate
+      pwdEl.addEventListener('keyup', (e)=>{ if(e.key === 'Enter') genBtn.click(); });
+
+      // lightweight autosave of last fields (local)
+      const STORAGE_KEY = 'scanlink_wifi_tool_v1';
+      function saveState(){
+        const state = { ssid:ssidEl.value, enc:encEl.value, pwd:pwdEl.value, hidden:hiddenEl.value };
+        try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+      }
+      function loadState(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(!raw) return;
+          const s = JSON.parse(raw);
+          if(s.ssid) ssidEl.value = s.ssid;
+          if(s.enc) encEl.value = s.enc;
+          if(s.pwd) pwdEl.value = s.pwd;
+          if(s.hidden) hiddenEl.value = s.hidden;
+        }catch(e){}
+      }
+      [ssidEl, encEl, pwdEl, hiddenEl].forEach(el=>{
+        el.addEventListener('change', saveState);
+        el.addEventListener('input', saveState);
+      });
+      loadState();
+
+    })();
+  </script>
 </body>
 </html>
