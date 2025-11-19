@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<!-- Full Favicon Pack -->
+   <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,47 +11,327 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
-
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Blur Background</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Background Blur — ScanLink Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-body{font-family:Poppins;background:#eef3ff;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
-input,button,select{width:100%;padding:10px;border-radius:10px;margin-top:10px}
-img{max-width:100%;margin-top:10px;border-radius:10px}
+  :root{--bg:#eef3ff;--card:#fff;--primary:#0f47d3;--muted:#6b7280}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#f5f8ff,#eef3ff);color:#051022;padding:18px}
+  .wrap{max-width:980px;margin:18px auto;background:var(--card);border-radius:14px;padding:18px;box-shadow:0 12px 40px rgba(9,30,66,0.06)}
+  header{display:flex;align-items:center;gap:12px}
+  .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(90deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:800}
+  h1{margin:0;font-size:18px;color:var(--primary)}
+  p.desc{margin:8px 0 16px;color:var(--muted);font-size:13px}
+
+  .controls{display:grid;grid-template-columns:1fr 320px;gap:14px}
+  .left{padding:10px}
+  .right{padding:10px}
+
+  .card{background:#fbfdff;padding:12px;border-radius:12px;border:1px solid rgba(2,6,23,0.04)}
+  input[type=file]{display:block}
+  .row{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .btn{padding:10px 12px;border-radius:10px;border:0;cursor:pointer;background:var(--primary);color:#fff;font-weight:600}
+  .muted{color:var(--muted);font-size:13px}
+  label{font-size:13px}
+
+  .canvasWrap{margin-top:12px;background:#0b1220;border-radius:12px;padding:8px;display:flex;justify-content:center}
+  canvas{max-width:100%;border-radius:8px;touch-action:none}
+
+  .toolRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .chip{padding:8px 10px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer}
+  .chip.active{background:var(--primary);color:#fff;border:0}
+
+  .small{font-size:13px}
+  footer{margin-top:12px;text-align:right;color:var(--muted);font-size:13px}
+
+  @media(max-width:900px){
+    .controls{grid-template-columns:1fr}
+    .right{order:2}
+  }
 </style>
 </head>
 <body>
-<div class="box">
-<h2>Blur Background</h2>
-<input type="file" id="file">
-<select id="level">
-  <option value="2">Blur 2px</option>
-  <option value="5">5px</option>
-  <option value="10">10px</option>
-  <option value="20">20px</option>
-</select>
-<button id="go">Apply Blur</button>
-<img id="out">
-</div>
+  <div class="wrap">
+    <header>
+      <div class="logo">SL</div>
+      <div>
+        <h1>Background Blur</h1>
+        <p class="desc">Client-side image blur tool — tap/click to increase blur, brush-selective blur, slider, and download.</p>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="left">
+        <div class="card">
+          <label class="small">Select image</label>
+          <input type="file" id="file" accept="image/*">
+
+          <div class="row">
+            <label class="small">Blur</label>
+            <input id="level" type="range" min="0" max="50" value="5" style="flex:1">
+            <div id="levelVal" class="muted" style="width:46px;text-align:right">5px</div>
+          </div>
+
+          <div class="toolRow">
+            <button class="chip active" id="modeGlobal">Global</button>
+            <button class="chip" id="modeBrush">Brush</button>
+            <button class="chip" id="modeClick">Tap+Increase</button>
+            <button class="chip" id="modePixel">Pixelate</button>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <button class="btn" id="apply">Apply</button>
+            <button class="btn" id="reset" style="background:#efefef;color:#111">Reset</button>
+            <button class="btn" id="download" style="background:linear-gradient(90deg,#00d2ff,#9b5cff)">Download</button>
+          </div>
+
+          <div style="margin-top:10px" class="small muted">
+            Tips: On mobile, use your finger to paint (Brush mode). In Tap+Increase mode each tap adds +2px blur. Use Pixelate for mosaic effect.
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="card small muted">
+          Advanced: Selective blur implemented with an editable brush mask (uses pointer events). All processing happens locally.
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="card">
+          <div class="canvasWrap" id="canvasWrap">
+            <canvas id="mainCanvas" width="800" height="500"></canvas>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+            <div class="muted small">Preview</div>
+            <div class="muted small">Width: <span id="imgDim">-</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>ScanLink Studio · Client-side · No uploads</footer>
+  </div>
 
 <script>
-go.onclick=()=>{
-  const f=file.files[0];
-  if(!f) return alert("Select image");
-  const img=new Image();
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    const ctx=c.getContext("2d");
-    c.width=img.width; c.height=img.height;
-    ctx.filter=`blur(${level.value}px)`;
-    ctx.drawImage(img,0,0);
-    out.src=c.toDataURL("image/png");
+// Elements
+const fileInput = document.getElementById('file');
+const levelRange = document.getElementById('level');
+const levelVal = document.getElementById('levelVal');
+const mainCanvas = document.getElementById('mainCanvas');
+const ctx = mainCanvas.getContext('2d');
+const applyBtn = document.getElementById('apply');
+const resetBtn = document.getElementById('reset');
+const downloadBtn = document.getElementById('download');
+const modeGlobal = document.getElementById('modeGlobal');
+const modeBrush = document.getElementById('modeBrush');
+const modeClick = document.getElementById('modeClick');
+const modePixel = document.getElementById('modePixel');
+const imgDim = document.getElementById('imgDim');
+
+let img = new Image();
+let blur = Number(levelRange.value);
+let mode = 'global'; // global | brush | click | pixel
+let brushSize = 40;
+let painting = false;
+
+// Offscreen canvases
+let srcCanvas = document.createElement('canvas');
+let blurredCanvas = document.createElement('canvas');
+let maskCanvas = document.createElement('canvas');
+let tempCanvas = document.createElement('canvas');
+
+function setMode(m){
+  mode = m;
+  [modeGlobal, modeBrush, modeClick, modePixel].forEach(b => b.classList.remove('active'));
+  if(m==='global') modeGlobal.classList.add('active');
+  if(m==='brush') modeBrush.classList.add('active');
+  if(m==='click') modeClick.classList.add('active');
+  if(m==='pixel') modePixel.classList.add('active');
+}
+
+modeGlobal.addEventListener('click', ()=>setMode('global'));
+modeBrush.addEventListener('click', ()=>setMode('brush'));
+modeClick.addEventListener('click', ()=>setMode('click'));
+modePixel.addEventListener('click', ()=>setMode('pixel'));
+
+levelRange.addEventListener('input', ()=>{
+  blur = Number(levelRange.value);
+  levelVal.textContent = blur + 'px';
+  render();
+});
+
+fileInput.addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  img = new Image();
+  img.onload = ()=>{
+    initializeCanvases(img.width, img.height);
+    imgDim.textContent = img.width + '×' + img.height;
+    render();
+    URL.revokeObjectURL(url);
   };
-  img.src=URL.createObjectURL(f);
-};
+  img.src = url;
+});
+
+function initializeCanvases(w,h){
+  [srcCanvas, blurredCanvas, maskCanvas, tempCanvas].forEach(c=>{c.width=w; c.height=h;});
+  mainCanvas.width = w; mainCanvas.height = h;
+  // clear mask
+  const mctx = maskCanvas.getContext('2d');
+  mctx.clearRect(0,0,maskCanvas.width,maskCanvas.height);
+}
+
+function updateBlurred(){
+  const bctx = blurredCanvas.getContext('2d');
+  bctx.clearRect(0,0,blurredCanvas.width,blurredCanvas.height);
+  bctx.filter = (mode==='pixel') ? 'none' : `blur(${blur}px)`;
+  bctx.drawImage(img,0,0);
+
+  if(mode==='pixel'){
+    // simple pixelate: draw small then scale up
+    const px = Math.max(2, Math.round(blur/2));
+    tempCanvas.width = blurredCanvas.width; tempCanvas.height = blurredCanvas.height;
+    const tctx = tempCanvas.getContext('2d');
+    // draw tiny
+    tctx.imageSmoothingEnabled = false;
+    const w = blurredCanvas.width; const h = blurredCanvas.height;
+    const sw = Math.max(1, Math.floor(w/px));
+    const sh = Math.max(1, Math.floor(h/px));
+    tctx.clearRect(0,0,w,h);
+    tctx.drawImage(img, 0, 0, sw, sh);
+    // scale up
+    tctx.drawImage(tempCanvas, 0, 0, sw, sh, 0, 0, w, h);
+    // copy back
+    bctx.clearRect(0,0,w,h);
+    bctx.drawImage(tempCanvas,0,0);
+  }
+}
+
+function render(){
+  if(!img || !img.width) {
+    // show placeholder
+    ctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+    ctx.fillStyle = '#0b1220'; ctx.fillRect(0,0,mainCanvas.width,mainCanvas.height);
+    return;
+  }
+
+  // draw original to srcCanvas (cached)
+  const sctx = srcCanvas.getContext('2d');
+  sctx.clearRect(0,0,srcCanvas.width,srcCanvas.height);
+  sctx.drawImage(img,0,0);
+
+  updateBlurred();
+
+  // main composite
+  ctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+  // draw original
+  ctx.drawImage(srcCanvas,0,0);
+
+  if(mode==='global' || mode==='click' || mode==='pixel'){
+    // draw entire blurred on top with opacity 1
+    ctx.drawImage(blurredCanvas,0,0);
+  }
+
+  if(mode==='brush'){
+    // composite blurred only where mask is painted
+    // tempCanvas = blurred * mask
+    const tctx = tempCanvas.getContext('2d');
+    tempCanvas.width = blurredCanvas.width; tempCanvas.height = blurredCanvas.height;
+    tctx.clearRect(0,0,tempCanvas.width,tempCanvas.height);
+    // draw blurred
+    tctx.drawImage(blurredCanvas,0,0);
+    // keep only where mask has alpha
+    tctx.globalCompositeOperation = 'destination-in';
+    tctx.drawImage(maskCanvas,0,0);
+    tctx.globalCompositeOperation = 'source-over';
+    // draw original then overlay temp (blurred masked)
+    ctx.drawImage(tempCanvas,0,0);
+  }
+}
+
+// Pointer/Brush events for maskCanvas
+const maskCtx = maskCanvas.getContext('2d');
+function pointerDown(e){
+  if(mode!=='brush') return;
+  painting = true;
+  mainCanvas.setPointerCapture(e.pointerId);
+  paintAt(e.clientX, e.clientY);
+}
+function pointerMove(e){
+  if(!painting || mode!=='brush') return;
+  paintAt(e.clientX, e.clientY);
+}
+function pointerUp(e){
+  if(mode!=='brush') return;
+  painting = false;
+  mainCanvas.releasePointerCapture(e.pointerId);
+}
+
+function paintAt(clientX, clientY){
+  const rect = mainCanvas.getBoundingClientRect();
+  const x = Math.round((clientX - rect.left) * (mainCanvas.width / rect.width));
+  const y = Math.round((clientY - rect.top) * (mainCanvas.height / rect.height));
+  maskCtx.fillStyle = 'rgba(255,255,255,1)';
+  maskCtx.beginPath();
+  maskCtx.arc(x,y, brushSize, 0, Math.PI*2);
+  maskCtx.fill();
+  render();
+}
+
+mainCanvas.addEventListener('pointerdown', pointerDown);
+mainCanvas.addEventListener('pointermove', pointerMove);
+mainCanvas.addEventListener('pointerup', pointerUp);
+mainCanvas.addEventListener('pointercancel', ()=>{painting=false});
+
+// Click/Tap to increase blur behavior
+mainCanvas.addEventListener('click', (e)=>{
+  if(mode==='click'){
+    blur = Math.min(50, blur + 2);
+    levelRange.value = blur; levelVal.textContent = blur + 'px';
+    render();
+  }
+});
+
+// apply button forces re-render
+applyBtn.addEventListener('click', ()=>render());
+
+// reset
+resetBtn.addEventListener('click', ()=>{
+  if(!img.width) return;
+  // clear mask and reset blur
+  const m = maskCanvas.getContext('2d');
+  m.clearRect(0,0,maskCanvas.width,maskCanvas.height);
+  blur = 5; levelRange.value = blur; levelVal.textContent = blur + 'px';
+  setMode('global');
+  render();
+});
+
+// download
+downloadBtn.addEventListener('click', ()=>{
+  // ensure final render
+  render();
+  const url = mainCanvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url; a.download = 'blurred-image.png';
+  document.body.appendChild(a); a.click(); a.remove();
+});
+
+// keyboard shortcuts
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'b') setMode('brush');
+  if(e.key === 'g') setMode('global');
+  if(e.key === 'c') setMode('click');
+});
+
+// initial placeholder
+(function placeholder(){
+  mainCanvas.width = 800; mainCanvas.height = 450;
+  ctx.fillStyle = '#0b1220'; ctx.fillRect(0,0,mainCanvas.width,mainCanvas.height);
+  ctx.fillStyle = '#a6b2c8'; ctx.font = '18px Poppins'; ctx.fillText('No image selected — choose a file to start', 18, 34);
+})();
+
 </script>
 </body>
 </html>
-
-
