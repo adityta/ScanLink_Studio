@@ -1,7 +1,11 @@
-<!DOCTYPE html>
-<html>
+<!--
+  Watermark Adder (updated)
+  Based on user's original files: :contentReference[oaicite:0]{index=0} :contentReference[oaicite:1]{index=1}
+-->
+<!doctype html>
+<html lang="en">
 <head>
-    <!-- Full Favicon Pack -->
+     <!-- Full Favicon Pack -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -11,46 +15,407 @@
 <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 
   <script src="seo-auto.js"></script>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Watermark Tool</title>
-<style>
-body{font-family:Poppins;background:#f4f7fb;padding:20px}
-.box{max-width:900px;margin:auto;background:#fff;padding:16px;border-radius:12px}
-input,button{width:100%;padding:10px;margin-top:10px;border-radius:10px}
-canvas{max-width:100%;margin-top:10px;border-radius:10px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Watermark Adder — ScanLink Studio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#ffffff; --primary:#0f47d3; --muted:#6b7280;
+      --glass: rgba(15,71,211,0.06);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:'Poppins',sans-serif;background:var(--bg);color:#111;padding:18px}
+    header{background:linear-gradient(90deg,#0f47d3,#7c3aed);color:#fff;padding:12px 16px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#00d2ff,#9b5cff);display:flex;align-items:center;justify-content:center;color:#021024;font-weight:700}
+    .title{font-size:16px;font-weight:700}
+    .topLinks a{color:white;text-decoration:none;margin-left:12px;font-weight:600}
+    main{max-width:1100px;margin:18px auto;display:grid;grid-template-columns:360px 1fr;gap:18px}
+    .panel{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(0,0,0,0.04);box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    h2{margin:0 0 8px 0;color:var(--primary)}
+    label{display:block;font-size:13px;margin-top:10px;color:var(--muted)}
+    input[type="text"], select, input[type="number"]{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);margin-top:6px;font-size:14px}
+    input[type="file"]{margin-top:6px}
+    .row{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .small{flex:1}
+    button{background:linear-gradient(90deg,#00d2ff,#9b5cff);border:0;color:white;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+    button:disabled{opacity:0.5;cursor:not-allowed}
+    canvas{max-width:100%;display:block;border-radius:8px;background:#fff;margin-top:10px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    .controls{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:13px;margin-top:8px}
+    .footerLinks{margin-top:12px;text-align:center}
+    .footerLinks a{color:var(--primary);text-decoration:none;margin:0 8px;font-weight:600}
+    @media (max-width:900px){
+      main{grid-template-columns:1fr; padding-bottom:120px}
+    }
+  </style>
 </head>
 <body>
 
-<div class="box">
-<h2>Watermark Tool</h2>
+<header>
+  <div class="brand">
+    <div class="logo">SL</div>
+    <div>
+      <div class="title">ScanLink Studio</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.85)">Watermark Adder</div>
+    </div>
+  </div>
+  <div class="topLinks">
+    <a href="index.html">Home</a>
+    <a href="jpg-to-png.html">JPG→PNG</a>
+    <a href="image-compress.html">Compressor</a>
+    <a href="background-remover-touch.html">BG Remover</a>
+  </div>
+</header>
 
-<input type="file" id="file">
-<input id="text" placeholder="Watermark text">
-<button id="go">Apply Watermark</button>
-<canvas id="c"></canvas>
-</div>
+<main>
+  <!-- Left panel: controls -->
+  <div class="panel">
+    <h2>Tool Controls</h2>
+
+    <label>Upload Image</label>
+    <input id="file" type="file" accept="image/*">
+
+    <label class="controls">Watermark Type</label>
+    <div class="row">
+      <select id="wmType" class="small" title="Choose watermark type">
+        <option value="text">Text</option>
+        <option value="image">Image</option>
+        <option value="tiled">Tiled Text</option>
+      </select>
+      <button id="reset">Reset</button>
+    </div>
+
+    <!-- Text watermark options -->
+    <div id="textOptions">
+      <label>Watermark Text</label>
+      <input id="text" type="text" placeholder="ScanLink Studio">
+
+      <div class="row">
+        <div style="flex:1">
+          <label>Font Size (px)</label>
+          <input id="fontSize" type="number" value="40" min="8" max="400">
+        </div>
+        <div style="width:110px">
+          <label>Opacity</label>
+          <input id="opacity" type="number" value="70" min="0" max="100">
+        </div>
+      </div>
+
+      <label>Position</label>
+      <select id="position">
+        <option value="bottom-right">Bottom right</option>
+        <option value="bottom-left">Bottom left</option>
+        <option value="top-left">Top left</option>
+        <option value="top-right">Top right</option>
+        <option value="center">Center</option>
+        <option value="diagonal">Diagonal</option>
+      </select>
+    </div>
+
+    <!-- Image watermark options -->
+    <div id="imageOptions" style="display:none;">
+      <label>Upload Watermark Image (PNG recommended)</label>
+      <input id="wmFile" type="file" accept="image/*">
+
+      <div class="row">
+        <div style="flex:1">
+          <label>Scale (%)</label>
+          <input id="imgScale" type="number" value="20" min="5" max="200">
+        </div>
+        <div style="width:110px">
+          <label>Opacity</label>
+          <input id="imgOpacity" type="number" value="70" min="0" max="100">
+        </div>
+      </div>
+
+      <label>Position</label>
+      <select id="imgPosition">
+        <option value="bottom-right">Bottom right</option>
+        <option value="center">Center</option>
+        <option value="top-left">Top left</option>
+      </select>
+    </div>
+
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button id="apply">Apply</button>
+      <button id="save" disabled>Download</button>
+      <button id="copy" disabled style="background:#111;color:#fff">Copy</button>
+    </div>
+
+    <div class="muted">Tip: Use tiled mode for repeated faint watermark across whole image. Increase font size for larger images.</div>
+
+    <div class="footerLinks">
+      <a href="watermark-tool.html">Open Tool</a> · <a href="index.html">Back to Tools</a>
+    </div>
+  </div>
+
+  <!-- Right panel: preview -->
+  <div class="panel">
+    <h2>Preview</h2>
+    <canvas id="c"></canvas>
+    <div id="meta" style="margin-top:8px;font-size:13px;color:var(--muted)"></div>
+  </div>
+</main>
 
 <script>
-const c=c=document.getElementById("c"),ctx=c.getContext("2d");
+  // Elements
+  const fileInput = document.getElementById('file');
+  const c = document.getElementById('c');
+  const ctx = c.getContext('2d');
+  const textInput = document.getElementById('text');
+  const applyBtn = document.getElementById('apply');
+  const saveBtn = document.getElementById('save');
+  const copyBtn = document.getElementById('copy');
+  const fontSizeInput = document.getElementById('fontSize');
+  const opacityInput = document.getElementById('opacity');
+  const positionSelect = document.getElementById('position');
+  const wmType = document.getElementById('wmType');
+  const textOptions = document.getElementById('textOptions');
+  const imageOptions = document.getElementById('imageOptions');
+  const wmFileInput = document.getElementById('wmFile');
+  const imgScale = document.getElementById('imgScale');
+  const imgOpacity = document.getElementById('imgOpacity');
+  const imgPosition = document.getElementById('imgPosition');
+  const resetBtn = document.getElementById('reset');
+  const meta = document.getElementById('meta');
 
-go.onclick=()=>{
-  const f=file.files[0];
-  const t=text.value.trim();
-  if(!f || !t) return alert("Select image + enter text");
-  const img=new Image();
-  img.onload=()=>{
-    c.width=img.width; c.height=img.height;
-    ctx.drawImage(img,0,0);
-    ctx.font="40px sans-serif";
-    ctx.fillStyle="rgba(0,0,0,0.4)";
-    ctx.textAlign="center";
-    ctx.fillText(t,img.width/2,img.height-50);
-  };
-  img.src=URL.createObjectURL(f);
-};
+  let baseImg = null;
+  let wmImg = null;
+  let lastAppliedDataURL = null;
+
+  // Load base image
+  fileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        baseImg = img;
+        c.width = img.width;
+        c.height = img.height;
+        ctx.clearRect(0,0,c.width,c.height);
+        ctx.drawImage(img, 0, 0);
+        saveBtn.disabled = true;
+        copyBtn.disabled = true;
+        meta.textContent = `Image: ${img.width} × ${img.height}px — ${f.name}`;
+      };
+      img.src = r.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  // Load watermark image (if chosen)
+  wmFileInput.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const img = new Image();
+      img.onload = () => { wmImg = img; };
+      img.src = r.result;
+    };
+    r.readAsDataURL(f);
+  });
+
+  // Switch options UI based on type
+  wmType.addEventListener('change', () => {
+    if(wmType.value === 'image') {
+      imageOptions.style.display = '';
+      textOptions.style.display = 'none';
+    } else {
+      imageOptions.style.display = 'none';
+      textOptions.style.display = '';
+    }
+  });
+
+  // Reset to original uploaded image
+  resetBtn.addEventListener('click', () => {
+    if(!baseImg) return;
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.drawImage(baseImg,0,0);
+    saveBtn.disabled = true;
+    copyBtn.disabled = true;
+    lastAppliedDataURL = null;
+  });
+
+  // Apply watermark
+  applyBtn.addEventListener('click', () => {
+    if(!baseImg) return alert('Please upload an image first.');
+    // draw base
+    ctx.clearRect(0,0,c.width,c.height);
+    ctx.drawImage(baseImg,0,0);
+
+    if(wmType.value === 'text' || wmType.value === 'tiled') {
+      drawTextWatermark({
+        text: textInput.value || 'ScanLink Studio',
+        fontSize: Number(fontSizeInput.value) || 40,
+        opacity: (Number(opacityInput.value)||70)/100,
+        position: positionSelect.value,
+        tiled: wmType.value === 'tiled'
+      });
+    } else if(wmType.value === 'image') {
+      if(!wmImg) return alert('Please upload a watermark image for image watermark.');
+      drawImageWatermark({
+        img: wmImg,
+        scalePct: Number(imgScale.value)||20,
+        opacity: (Number(imgOpacity.value)||70)/100,
+        position: imgPosition.value
+      });
+    }
+
+    // enable save/copy
+    lastAppliedDataURL = c.toDataURL('image/png');
+    saveBtn.disabled = false;
+    copyBtn.disabled = false;
+  });
+
+  // Save / download
+  saveBtn.addEventListener('click', () => {
+    if(!lastAppliedDataURL) return;
+    const a = document.createElement('a');
+    a.href = lastAppliedDataURL;
+    a.download = `watermarked-${Date.now()}.png`;
+    a.click();
+  });
+
+  // Copy image to clipboard (if supported)
+  copyBtn.addEventListener('click', async () => {
+    try {
+      const blob = await (await fetch(lastAppliedDataURL)).blob();
+      await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+      alert('Image copied to clipboard');
+    } catch (err) {
+      alert('Copy failed: ' + (err && err.message ? err.message : err));
+    }
+  });
+
+  // Helpers: text watermark
+  function drawTextWatermark({text, fontSize, opacity, position, tiled}) {
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = 'white';
+    ctx.textBaseline = 'middle';
+    ctx.font = `${Math.round(fontSize)}px Poppins, sans-serif`;
+    ctx.lineWidth = Math.max(2, Math.round(fontSize / 12));
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+
+    if(tiled) {
+      // Repeat watermark across canvas
+      const spacingX = fontSize * 6;
+      const spacingY = fontSize * 4;
+      const angle = -20 * Math.PI/180;
+      // draw rotated tiled text on an offscreen canvas for crisp repeat
+      const off = document.createElement('canvas');
+      const ow = c.width; const oh = c.height;
+      off.width = ow; off.height = oh;
+      const octx = off.getContext('2d');
+      octx.translate(ow/2, oh/2);
+      octx.rotate(angle);
+      octx.translate(-ow/2, -oh/2);
+      octx.globalAlpha = opacity;
+      octx.font = ctx.font;
+      octx.textBaseline = 'middle';
+      octx.fillStyle = 'rgba(255,255,255,1)';
+      octx.strokeStyle = 'rgba(0,0,0,0.18)';
+      for(let y = -oh; y < oh*2; y += spacingY) {
+        for(let x = -ow; x < ow*2; x += spacingX) {
+          octx.strokeText(text, x, y);
+          octx.fillText(text, x, y);
+        }
+      }
+      ctx.drawImage(off, 0, 0);
+    } else if(position === 'diagonal') {
+      // diagonal single across
+      ctx.translate(c.width/2, c.height/2);
+      ctx.rotate(-Math.atan(c.height/c.width));
+      ctx.translate(-c.width/2, -c.height/2);
+      const x = c.width/10;
+      const y = c.height/2;
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+    } else {
+      // calculate coordinates based on position
+      const metrics = ctx.measureText(text);
+      const textW = metrics.width;
+      const textH = fontSize;
+      let x=20, y=c.height - 20 - textH/2;
+      switch(position){
+        case 'bottom-right':
+          x = c.width - textW - 20;
+          y = c.height - 20 - textH/2;
+          break;
+        case 'bottom-left':
+          x = 20;
+          y = c.height - 20 - textH/2;
+          break;
+        case 'top-left':
+          x = 20;
+          y = 20 + textH/2;
+          break;
+        case 'top-right':
+          x = c.width - textW - 20;
+          y = 20 + textH/2;
+          break;
+        case 'center':
+          x = (c.width - textW)/2;
+          y = c.height/2;
+          break;
+      }
+      ctx.strokeText(text, x, y);
+      ctx.fillText(text, x, y);
+    }
+    ctx.restore();
+  }
+
+  // Helpers: image watermark
+  function drawImageWatermark({img, scalePct, opacity, position}) {
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    // compute scaled size
+    const scale = Math.max(0.05, Math.min(2, scalePct/100));
+    // scale relative to base image smaller dimension
+    const baseSmall = Math.min(c.width, c.height);
+    const targetW = baseSmall * scale;
+    const ratio = img.width / img.height;
+    const targetH = targetW / ratio;
+
+    let x = 20, y = c.height - targetH - 20;
+    if(position === 'center'){
+      x = (c.width - targetW)/2;
+      y = (c.height - targetH)/2;
+    } else if(position === 'top-left'){
+      x = 20; y = 20;
+    } else if(position === 'bottom-right'){
+      x = c.width - targetW - 20;
+      y = c.height - targetH - 20;
+    }
+
+    ctx.drawImage(img, x, y, targetW, targetH);
+    ctx.restore();
+  }
+
+  // Initialize with simple blank canvas
+  (function init(){
+    c.width = 900; c.height = 600;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle = '#ddd';
+    ctx.font = '18px Poppins';
+    ctx.fillText('Upload an image to begin — preview will appear here', 24, 40);
+    meta.textContent = 'No image loaded';
+  })();
+
+  // Keyboard shortcuts: Ctrl+S to save (when applied)
+  window.addEventListener('keydown', (e) => {
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
+      e.preventDefault();
+      if(!saveBtn.disabled) saveBtn.click();
+    }
+  });
 </script>
 
 </body>
 </html>
-
