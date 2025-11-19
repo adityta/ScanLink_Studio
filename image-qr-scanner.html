@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- Full Favicon Pack -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+  <script src="seo-auto.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR Scanner (Image) — ScanLink Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f4f6fb; --card:#fff; --primary:#0f47d3; --muted:#6b7280;
+  --glass:rgba(15,71,211,0.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:'Poppins',sans-serif; background:var(--bg); color:#111;
+}
+header{
+  background:linear-gradient(90deg,#0f47d3,#7c3aed);
+  padding:16px 22px; color:#fff; display:flex; align-items:center; gap:12px;
+}
+.logo{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,#00d2ff,#9b5cff);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:20px;color:#021024;
+}
+.title{font-size:20px;font-weight:700}
+
+.container{
+  max-width:760px; margin:25px auto; background:var(--card);
+  padding:22px; border-radius:14px;
+  box-shadow:0 10px 35px rgba(0,0,0,0.06);
+}
+
+h2{margin:0;color:var(--primary);font-size:24px;font-weight:700;text-align:center}
+p{text-align:center;color:var(--muted);margin-top:6px;font-size:14px}
+
+.uploadBox{
+  border:2px dashed #d3d6df; padding:35px; margin-top:25px;
+  border-radius:14px; text-align:center; cursor:pointer; transition:.25s;
+}
+.uploadBox:hover{border-color:var(--primary);background:var(--glass)}
+
+#preview{
+  width:100%;margin-top:20px;border-radius:12px;display:none;
+  box-shadow:0 6px 22px rgba(0,0,0,0.12);
+}
+
+.btn{
+  padding:12px 18px;border:none;border-radius:10px;font-size:15px;
+  cursor:pointer;font-weight:600;margin-top:18px;
+}
+.primary{
+  background:var(--primary);color:#fff;
+  box-shadow:0 8px 20px rgba(15,71,211,0.16);
+}
+.copyBtn{
+  background:#10b981;color:#fff;
+}
+.pasteBtn{
+  background:#374151;color:#fff;
+}
+
+.resultCard{
+  margin-top:25px;background:#fff;border-radius:12px;padding:16px;
+  border:1px solid rgba(0,0,0,0.06); display:none;
+}
+.resultText{font-size:15px;color:#111;word-break:break-all;margin-bottom:12px}
+
+footer{
+  margin-top:40px;text-align:center;color:var(--muted);font-size:13px;
+}
+
+/* drag highlight */
+.uploadBox.drag{border-color:#00d2ff;background:rgba(0,210,255,0.08)}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="logo">SL</div>
+  <div class="title">ScanLink Studio</div>
+</header>
+
+<div class="container">
+
+  <h2>QR Scanner (Image Upload)</h2>
+  <p>Upload any image → extract QR code instantly</p>
+
+  <div id="uploadBox" class="uploadBox">
+    <input type="file" id="fileInput" accept="image/*" hidden>
+    <div>📁 <b>Click to Upload</b> or Drag & Drop Image</div>
+  </div>
+
+  <button class="btn pasteBtn" onclick="pasteImage()">📋 Paste Image URL</button>
+
+  <img id="preview">
+
+  <div class="resultCard" id="resultCard">
+    <div class="resultText" id="resultText"></div>
+    <button class="btn copyBtn" onclick="copyResult()">📄 Copy Result</button>
+  </div>
+
+</div>
+
+<footer>© 2025 ScanLink Studio · Image QR Scanner</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<script>
+const fileInput = document.getElementById("fileInput");
+const uploadBox = document.getElementById("uploadBox");
+const preview = document.getElementById("preview");
+const resultCard = document.getElementById("resultCard");
+const resultText = document.getElementById("resultText");
+
+/* CLICK */
+uploadBox.onclick = ()=> fileInput.click();
+
+/* Upload */
+fileInput.onchange = ()=> handleFile(fileInput.files[0]);
+
+/* Drag & Drop */
+uploadBox.addEventListener("dragover", e=>{
+  e.preventDefault();
+  uploadBox.classList.add("drag");
+});
+uploadBox.addEventListener("dragleave", ()=> uploadBox.classList.remove("drag"));
+uploadBox.addEventListener("drop", e=>{
+  e.preventDefault();
+  uploadBox.classList.remove("drag");
+  handleFile(e.dataTransfer.files[0]);
+});
+
+/* Handle file */
+function handleFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+
+  reader.onload = e=>{
+    preview.src = e.target.result;
+    preview.style.display="block";
+    scanQR(preview);
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Scan QR */
+function scanQR(img){
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  img.onload = ()=>{
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img,0,0);
+
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height);
+    const code = jsQR(data.data, data.width, data.height);
+
+    if(code){
+      resultText.innerText = code.data;
+      resultCard.style.display = "block";
+    } else {
+      resultText.innerText = "❌ No QR Code Found!";
+      resultCard.style.display = "block";
+    }
+  };
+}
+
+/* Copy button */
+function copyResult(){
+  navigator.clipboard.writeText(resultText.innerText);
+  alert("Copied!");
+}
+
+/* Paste Image (URL from clipboard) */
+async function pasteImage(){
+  try{
+    const text = await navigator.clipboard.readText();
+
+    if(!text || !text.startsWith("http")){
+      alert("Clipboard में image URL नहीं मिला!");
+      return;
+    }
+    preview.src = text;
+    preview.style.display="block";
+    scanQR(preview);
+
+  }catch(e){
+    alert("Browser paste allow नहीं कर रहा!");
+  }
+}
+</script>
+
+</body>
+</html>
